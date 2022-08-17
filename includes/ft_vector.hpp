@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/17 18:22:57 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/17 18:49:25 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,16 +56,16 @@ namespace ft
 
 		// ELEMENT ACCES:
 
-		reference		at(size_type pos) { if (pos < _size) throw (std::out_of_range(OFR_ERR)); return (_begin + pos); }
-		const_reference	at(size_type pos) const { if (pos < _size) throw (std::out_of_range(OFR_ERR)); return (_begin + pos); }
-		reference		operator[](size_type pos) { if (pos < _size) throw (std::out_of_range(OFR_ERR)); return (_begin + pos); }
-		const_reference	operator[](size_type pos) const { if (pos < _size) throw (std::out_of_range(OFR_ERR)); return (_begin + pos); }
-		reference		front() { return (*_begin); }
-		const_reference	front() const { return (*_begin); }
-		reference		back()	{ return (*_end); }
-		const_reference	back() const { return (*_end); }
-		T*				data() { return (_begin); }
-		const T*		data() const { return (_begin); }
+		reference		at(size_type pos) 				{ if (pos >= _size) throw (std::out_of_range(OFR_ERR)); return (_begin + pos); }
+		const_reference	at(size_type pos) const 		{ if (pos >= _size) throw (std::out_of_range(OFR_ERR)); return (_begin + pos); }
+		reference		operator[](size_type pos) 		{ return (_begin + pos); }
+		const_reference	operator[](size_type pos) const { return (_begin + pos); }
+		reference		front() 						{ return (*_begin); }
+		const_reference	front() const 					{ return (*_begin); }
+		reference		back()							{ return (*_end); }
+		const_reference	back() const 					{ return (*_end); }
+		T*				data() 							{ return (_begin); }
+		const T*		data() const 					{ return (_begin); }
 		
 		// ITERATORS:
 		//
@@ -89,7 +89,7 @@ namespace ft
 		void			push_back(const T& value);
 		void			pop_back();
 		void			resize(size_type n, value_type val = value_type());
-		void			swap();
+		void			swap(vector& x);
 	};
 };
 
