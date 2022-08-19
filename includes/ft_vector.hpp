@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/17 18:49:25 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/19 22:44:01 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ namespace ft
 		
 		// typedef DIFFERENCE_TYPE - LOL
 
-		typedef	value_type& 						reference;
-		typedef const value_type& 					const_reference;
+		typedef	typename Allocator::reference		reference;
+		typedef typename Allocator::const_reference	const_reference;
 		typedef	typename Allocator::pointer			pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
 
@@ -51,8 +51,39 @@ namespace ft
 
 		public:
 
-		vector();
-		~vector();
+		explicit vector(const allocator_type& alloc = allocator_type())
+		{
+			this->_size = 0;
+			this->_capacity = 16;
+			this->_begin = this->_allocator.allocate(_capacity, 0);
+			this->_end = this->_begin;
+		}
+
+		explicit vector(size_type n, const T& value = T(), const allocator_type& alloc = allocator_type())
+		{
+			this->_size = n;
+			this->_capacity = n * 2;
+			this->_begin = this->_allocator.allocate(_capacity, 0);
+			this->_end = this->_begin + n;
+			for (pointer begin = this->_begin; begin != this->_end; begin++)
+				this->_allocator.construct(begin, value);
+		}
+
+		vector(const vector<T,Allocator>& x)
+		{
+
+		}
+
+		//template <class InputIterator>
+		//vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
+
+
+		~vector()
+		{
+			for (pointer begin = this->_begin; begin != this->_end; begin++)
+				this->_allocator.destroy(begin);
+			this->_allocator.deallocate(_begin, this->_capacity);	
+		}
 
 		// ELEMENT ACCES:
 
@@ -75,11 +106,12 @@ namespace ft
 
 		// CAPACITY:
 
-		bool			empty() const { return (_size == 0); }
-		size_type		size() const { return (_size); }
-		size_type		max_size() const; /////////////////////////////////
-		void			reserve(size_type new_cap); ///////////////////////
-		size_type		capacity() const { return (_capacity); }
+		bool			empty() const 										{ return (_size == 0); }
+		size_type		size() const 										{ return (_size); }
+		size_type		max_size() const; ////////////////////////////
+		void			reserve(size_type new_cap);
+		size_type		capacity() const 									{ return (_capacity); }
+		void			resize(size_type n, value_type val = value_type());
 
 		//	MODIFIERS:
 
@@ -88,9 +120,10 @@ namespace ft
 		// ITERATOR ERASE
 		void			push_back(const T& value);
 		void			pop_back();
-		void			resize(size_type n, value_type val = value_type());
 		void			swap(vector& x);
 	};
 };
+
+#include "../srcs/ft_vector.tpp"
 
 #endif
