@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 17:18:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/17 16:29:28 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/21 13:06:58 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,7 @@ namespace ft
 			typedef typename Container::reference reference;
 			typedef typename Container::const_reference const_reference;
 
-			explicit stack(const container_type& ctnr = container_type()) {};
-			
+			explicit stack(const container_type& ctnr = container_type()) {};			
 
 			bool		empty() const		{ return (data.empty); }
 			size_type	size() const		{ return (data.size()); }
