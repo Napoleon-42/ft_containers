@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 17:18:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/21 13:06:58 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/21 17:43:51 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ namespace ft
 			typedef typename Container::const_reference const_reference;
 
 			explicit stack(const container_type& ctnr = container_type()) {};			
+			~stack() {}
+			
 
 			bool		empty() const		{ return (data.empty); }
 			size_type	size() const		{ return (data.size()); }
@@ -40,11 +42,9 @@ namespace ft
 			void		push(T& val)		{ data.push_back(val); }
 			void 		pop()				{ data.pop_back(); }
 
-			/*
-			stack<T> & 		operator=(stack<T> const & var){
-				
-			}
-			*/
+			
+			stack<T> & 		operator=(stack<T> const & var) { this->data = var.data; return (this); }
+			
 	};
 
 

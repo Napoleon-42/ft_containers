@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/21 13:06:48 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/21 17:48:31 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,8 @@ namespace ft
 		const_reference	operator[](size_type pos) const { return (*(_begin + pos)); }
 		reference		front() 						{ return (*_begin); }
 		const_reference	front() const 					{ return (*_begin); }
-		reference		back()							{ return (*(_end - 1); }
-		const_reference	back() const 					{ return (*(_end - 1); }
+		reference		back()							{ return (*(_end - 1)); }
+		const_reference	back() const 					{ return (*(_end - 1)); }
 		T*				data() 							{ return (_begin); }
 		const T*		data() const 					{ return (_begin); }
 
@@ -127,10 +127,10 @@ namespace ft
 
 		// CAPACITY:
 
-		bool			empty() const 										{ return (_size == 0); }
-		size_type		size() const 										{ return (_size); }
-		size_type		capacity() const 									{ return (_capacity); }
-		size_type		max_size() const { return (1); } ////////////////////////////
+		bool			empty() const 					{ return (_size == 0); }
+		size_type		size() const 					{ return (_size); }
+		size_type		capacity() const 				{ return (_capacity); }
+		size_type		max_size() const 				{ return (_allocator.max_size()); }
 		
 		void			reserve(size_type new_cap)
 		{
@@ -217,9 +217,13 @@ namespace ft
 			_allocator.destroy(_begin + _size);
 			_end--;
 		}
+
 		void			swap(vector& x)
 		{
-
+			std::swap(_begin, x._begin);
+			std::swap(_size, x._size);
+			std::swap(_capacity, x._capacity);
+			std::swap(_end, x._end);
 		}
 	};
 
