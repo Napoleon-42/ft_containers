@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/21 17:48:31 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/27 20:47:55 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <memory>
 #include <stdexcept>
+#include <ft_iterator.hpp>
+
 #define OFR_ERR "Out of range error: vector::_M_range_check"
 
 namespace ft
@@ -27,19 +29,19 @@ namespace ft
 		typedef	Allocator 							allocator_type;
 		typedef	std::size_t 						size_type;
 		
-		// typedef DIFFERENCE_TYPE - LOL
 
 		typedef	typename Allocator::reference		reference;
 		typedef typename Allocator::const_reference	const_reference;
 		typedef	typename Allocator::pointer			pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
 
-		/*
-		typedef 									iterator;
-		typedef										const_iterator;
-		typedef										reverse_iterator;
-		typedef 									const_reverse_iterator;
-		*/
+		typedef	ft::random_access_iterator<T>		iterator;
+		typedef	ft::random_access_iterator<const T>	const_iterator; 
+		typedef	ft::reverse_iterator<T>				reverse_iterator;
+		typedef ft::reverse_iterator<const T>		const_reverse_iterator; 
+
+		typedef	difference_type						ft::iterator_traits<iterator>::difference_type;
+		
 
 		private:
 
@@ -79,8 +81,19 @@ namespace ft
 				_allocator.construct(_begin + i, x[i]);
 		}
 
-		//template <class InputIterator>
-		//vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
+		template <class InputIterator>
+		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type())
+		{
+			_size = 0;
+			_capacity = 16;
+			_begin = _allocator.allocate(_capacity, 0);
+			_end = _begin + _size;
+			while (first != last)
+			{
+				this->push_back(*first);
+				first++;
+			}
+		}
 
 		~vector()
 		{
@@ -118,10 +131,20 @@ namespace ft
 
 
 		// ITERATORS:
-		//
-		//
-		//
-		//
+		
+		iterator		begin() { return (iterator(_begin)); }
+		const_iterator	begin() { return (const_iterator(_begin)); }
+		
+		iterator		end() { return (iterator(_end)); }
+		const_iterator	end() { return (const_iterator(_end)); }
+
+	
+		reverse_iterator		rbegin() { return (reverse_iterator(_end)); }
+		const_reverse_iterator	rbegin() { return (const_reverse_iterator(_end)); }
+		
+		reverse_iterator		rend() { return (reverse_iterator(_begin)); }
+		const_reverse_iterator	rend() { return (const_reverse_iterator(_begin)); }
+
 
 
 
@@ -185,9 +208,22 @@ namespace ft
 
 		//	MODIFIERS:
 
-		// ITERATOR INSERT
+		iterator	insert( iterator pos, const T& value)
+		{
+			if (_size + 1 > _capacity)
+				reserve(_capacity * 2);
+			_end++;
 
-		// ITERATOR ERASE
+			pointer ptr = _end - 1;
+			while (ptr != pos)
+			{
+				_allocator.construct(ptr, ptr - 1);
+				ptr--;
+			}
+			_allocator.construct(ptr, value);
+
+			return (iterator(ptr));
+		}
 
 		void			clear()
 		{

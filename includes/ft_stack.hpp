@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/16 17:18:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/21 17:43:51 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/24 17:00:33 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 # define FT_STACK_HPP
 
 #include "ft_containers.hpp"
+#include "ft_vector.hpp"
 
 namespace ft
 {
-	template <class T, class Container = std::vector<T> > class stack
+	template <class T, class Container = ft::vector<T> > class stack
 	{
 		protected:
 
