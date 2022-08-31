@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/31 21:40:58 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/31 23:01:16 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include <memory>
 #include <stdexcept>
-#include <ft_iterator.hpp>
+#include "ft_iterator.hpp"
 
 #define OFR_ERR "Out of range error: vector::_M_range_check"
 
@@ -57,6 +57,7 @@ namespace ft
 
 		explicit vector(const allocator_type& alloc = allocator_type())
 		{
+			_allocator = alloc;
 			_size = 0;
 			_capacity = 16;
 			_begin = _allocator.allocate(_capacity, 0);
@@ -65,6 +66,7 @@ namespace ft
 
 		explicit vector(size_type n, const T& value = T(), const allocator_type& alloc = allocator_type())
 		{
+			_allocator = alloc;
 			_size = n;
 			_capacity = n * 2;
 			_begin = _allocator.allocate(_capacity, 0);
@@ -79,13 +81,14 @@ namespace ft
 			_capacity = x.capacity();
 			_begin = _allocator.allocate(_capacity, 0);
 			_end = _begin + _size;
-			for (int i = 0; i < _size; i++)
+			for (unsigned int i = 0; i < _size; i++)
 				_allocator.construct(_begin + i, x[i]);
 		}
 
 		template <class InputIterator>
 		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type())
 		{
+			_allocator = alloc;
 			_size = 0;
 			_capacity = 16;
 			_begin = _allocator.allocate(_capacity, 0);
@@ -113,8 +116,9 @@ namespace ft
 			_capacity = x.capacity();
 			_begin = _allocator.allocate(_capacity, 0);
 			_end = _begin + _size;
-			for (int i = 0; i < _size; i++)
+			for (unsigned int i = 0; i < _size; i++)
 				_allocator.construct(_begin + i, x[i]);
+			return (*this);
 		}
 
 		// ELEMENT ACCES:
@@ -369,7 +373,7 @@ namespace ft
 			return (false);
 		else
 		{
-			for (int i = 0; i < lhs.size(); i++)
+			for (unsigned int i = 0; i < lhs.size(); i++)
 				if (lhs[i] != rhs[i]) return (false);
 		}
 
@@ -385,7 +389,7 @@ namespace ft
 			return (false);
 		else if (lhs.size() == rhs.size())
 		{
-			for (int i = 0; i < lhs.size(); i++)
+			for (unsigned int i = 0; i < lhs.size(); i++)
 				if (lhs[i] < rhs[i]) return (true);
 		}
 

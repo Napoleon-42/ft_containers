@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 17:02:00 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/31 21:28:02 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/31 23:03:33 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ namespace ft
 
 			random_access_iterator() : _ptr (NULL) {}
 			explicit random_access_iterator(pointer ptr) : _ptr (ptr) {}
-			random_access_iterator(const random_access_iterator & it) { this = it; }
+			random_access_iterator(const random_access_iterator & it) { _ptr = &(*it); }
 			~random_access_iterator();
 
 			reference 					operator= (const random_access_iterator & it) { _ptr = &(*it); return (*this); }
