@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/27 20:47:55 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/08/31 21:40:58 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,22 +25,24 @@ namespace ft
 	{
 		public:
 
-		typedef	T 									value_type;
-		typedef	Allocator 							allocator_type;
-		typedef	std::size_t 						size_type;
-		
+		typedef	T 														value_type;
+		typedef	Allocator 												allocator_type;
+		typedef	std::size_t 											size_type;
+	
 
-		typedef	typename Allocator::reference		reference;
-		typedef typename Allocator::const_reference	const_reference;
-		typedef	typename Allocator::pointer			pointer;
-		typedef typename Allocator::const_pointer	const_pointer;
+		typedef	typename Allocator::reference							reference;
+		typedef typename Allocator::const_reference						const_reference;
+		typedef	typename Allocator::pointer								pointer;
+		typedef typename Allocator::const_pointer						const_pointer;
 
-		typedef	ft::random_access_iterator<T>		iterator;
-		typedef	ft::random_access_iterator<const T>	const_iterator; 
-		typedef	ft::reverse_iterator<T>				reverse_iterator;
-		typedef ft::reverse_iterator<const T>		const_reverse_iterator; 
 
-		typedef	difference_type						ft::iterator_traits<iterator>::difference_type;
+		typedef	ft::random_access_iterator<T>							iterator;
+		typedef	ft::random_access_iterator<const T>						const_iterator; 
+		typedef	ft::reverse_iterator<T>									reverse_iterator;
+		typedef ft::reverse_iterator<const T>							const_reverse_iterator; 
+
+
+		typedef	typename ft::iterator_traits<iterator>::difference_type	difference_type;
 		
 
 		private:
@@ -132,18 +134,18 @@ namespace ft
 
 		// ITERATORS:
 		
-		iterator		begin() { return (iterator(_begin)); }
-		const_iterator	begin() { return (const_iterator(_begin)); }
+		iterator		begin() 		{ return (iterator(_begin)); }
+		const_iterator	begin() const	{ return (const_iterator(_begin)); }
 		
-		iterator		end() { return (iterator(_end)); }
-		const_iterator	end() { return (const_iterator(_end)); }
+		iterator		end() 			{ return (iterator(_end)); }
+		const_iterator	end() const		{ return (const_iterator(_end)); }
 
 	
-		reverse_iterator		rbegin() { return (reverse_iterator(_end)); }
-		const_reverse_iterator	rbegin() { return (const_reverse_iterator(_end)); }
+		reverse_iterator		rbegin() 		{ return (reverse_iterator(_end)); }
+		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(_end)); }
 		
-		reverse_iterator		rend() { return (reverse_iterator(_begin)); }
-		const_reverse_iterator	rend() { return (const_reverse_iterator(_begin)); }
+		reverse_iterator		rend() 			{ return (reverse_iterator(_begin)); }
+		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(_begin)); }
 
 
 
@@ -210,7 +212,7 @@ namespace ft
 
 		iterator	insert( iterator pos, const T& value)
 		{
-			if (_size + 1 > _capacity)
+			while (_size + 1 > _capacity)
 				reserve(_capacity * 2);
 			_end++;
 
@@ -223,6 +225,100 @@ namespace ft
 			_allocator.construct(ptr, value);
 
 			return (iterator(ptr));
+		}
+
+		void		insert( iterator pos, size_type count, const T& value)
+		{
+			while (_size + count > _capacity)
+				reserve(_capacity * 2);
+			_end += count;
+
+			pointer ptr = _end - 1;
+			pointer past_end = _end - count;
+			while (past_end != pos)
+			{
+				_allocator.construct(ptr, past_end - 1);
+				ptr--;
+				past_end--;
+			}
+
+			ptr = pos;
+			while (count > 0)
+			{
+				_allocator.construct(ptr, value);
+				ptr++;
+				count--;
+			}
+		}
+
+		template<class InputIt>
+		void		insert( iterator pos, InputIt first, InputIt last)
+		{
+			size_type count = last - first;
+			while (_size + count > _capacity)
+				reserve(_capacity * 2);
+			_end += count;
+
+			pointer ptr = _end - 1;
+			pointer past_end = _end - count;
+			while (past_end != pos)
+			{
+				_allocator.construct(ptr, past_end - 1);
+				ptr--;
+				past_end--;
+			}
+
+			ptr = pos;
+			while (first != last)
+			{
+				_allocator.construct(ptr, first);
+				ptr++;
+				first++;
+			}
+		
+		}
+
+		iterator erase( iterator pos)
+		{
+			pointer ptr = pos;
+			_allocator.destroy(pos);
+			while (ptr + 1 != _end)
+			{
+				_allocator.construct(ptr, ptr + 1);
+				ptr++;
+			}
+			_end--;
+			_size--;
+			return (pos);
+		}
+
+		iterator erase( iterator first, iterator last)
+		{
+			pointer ptr = first;
+			while (ptr != last)
+			{
+				_allocator.destroy(ptr);
+				ptr++;
+			}
+			
+			pointer new_ptr = last;
+			ptr = first;
+			while (new_ptr != _end)
+			{
+				_allocator.construct(ptr, *new_ptr);
+				new_ptr++;
+				ptr++;
+			}
+			
+
+			new_ptr = ptr;
+			while (ptr != _end)
+			{
+				_allocator.destroy(ptr);
+				ptr++;
+			}
+
+			_end = new_ptr;
 		}
 
 		void			clear()
