@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/03 20:15:33 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/04 12:47:56 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <memory>
 #include <stdexcept>
 #include "ft_iterator.hpp"
+#include "ft_enable_if.hpp"
+#include "ft_is_integral.hpp"
 
 #define OFR_ERR "Out of range error: vector::_M_range_check"
 
@@ -87,7 +89,7 @@ namespace ft
 
 		template <class InputIterator>
 		vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), 
-		typename ft::enableif<!std::is_intergral<InputIterator>::value, InputIterator>::type* = NULL)
+		typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
 		{	
 			_allocator = alloc;
 			_size = 0;
@@ -215,6 +217,21 @@ namespace ft
 
 		//	MODIFIERS:
 
+
+		template <class InputIterator>
+		void assign( InputIterator first, InputIterator last,
+		typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = NULL)
+		{
+			erase(begin(), end());
+			insert(begin(), first, last);
+		}
+
+		void assign(size_type n, const T& u)
+		{
+			erase(begin(), end());
+			insert(begin(), n, u);
+		}
+
 		iterator	insert( iterator pos, const T& value)
 		{
 			while (_size + 1 > _capacity)
@@ -257,7 +274,8 @@ namespace ft
 		}
 
 		template<class InputIt>
-		void		insert( iterator pos, InputIt first, InputIt last)
+		void		insert( iterator pos, InputIt first, InputIt last,
+		typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 		{
 			size_type count = last - first;
 			while (_size + count > _capacity)

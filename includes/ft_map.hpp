@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/08/21 20:45:10 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/04 17:34:45 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,16 @@
 #include <memory>
 #include <functional>
 #include <utility>
+#include "ft_pair.hpp"
+
 
 namespace ft
 {
 	template<
 			class Key, 
 			class T, 
-			class Compare = less<Key>, 
-			class Allocator = allocator<pair<const Key, T> > 
+			class Compare = std::less<Key>, 
+			class Allocator = std::allocator<ft::pair<const Key, T> > 
 			> class map
 	{
 		public:
@@ -113,6 +115,10 @@ namespace ft
 
 		key_compare			key_comp() const;
 		map::value_compare	value_comp() const;
+
+		//	ALLOCATOR
+
+		allocator_type		get_allocator() { return (_allocator); }
 
 
 
