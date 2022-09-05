@@ -6,7 +6,7 @@
 #    By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/17 15:35:32 by lnelson           #+#    #+#              #
-#    Updated: 2022/08/31 22:45:09 by lnelson          ###   ########.fr        #
+#    Updated: 2022/09/05 19:07:20 by lnelson          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,18 +14,15 @@ NAME		= exe
 
 CC			= c++
 
-INCL 		=	${INCL_DIR}ft_containers.hpp \
-				${INCL_DIR}ft_enable_if.hpp \
-				${INCL_DIR}ft_is_integral.hpp \
-				${INCL_DIR}ft_iterator.hpp \
-				${INCL_DIR}ft_map.hpp \
-				${INCL_DIR}ft_pair.hpp \
-				${INCL_DIR}ft_stack.hpp \
-				${INCL_DIR}ft_vector.hpp \
+INCL 		=	${INCL_DIR}containers.hpp \
+				${INCL_DIR}enable_if.hpp \
+				${INCL_DIR}is_integral.hpp \
+				${INCL_DIR}iterator.hpp \
+				${INCL_DIR}map.hpp \
+				${INCL_DIR}pair.hpp \
+				${INCL_DIR}stack.hpp \
+				${INCL_DIR}vector.hpp \
 				${INCL_DIR}lexicographical_compare.hpp
 
-INCL_DIR	= ./includes/
-
-SRCS_DIR	= ./srcs/
-
+INCL_DIR	= ./
 

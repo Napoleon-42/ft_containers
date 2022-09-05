@@ -6,15 +6,17 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/04 17:18:50 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/05 20:15:51 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_containers.hpp"
-#include "ft_stack.hpp"
-#include "ft_vector.hpp"
+#include "stack.hpp"
+#include "vector.hpp"
 #include <iostream>
 #include <iomanip>
+#include <stack>
+#include <vector>
+#include <map>
 
 int main()
 {
