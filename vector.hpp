@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_vector.hpp                                      :+:      :+:    :+:   */
+/*   vector.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/05 18:49:23 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/07 21:11:53 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,32 +317,29 @@ namespace ft
 
 		iterator erase( iterator first, iterator last)
 		{
-			pointer ptr = &(*first);
-			while (ptr != &(*last))
+			difference_type	erasedSize = last - first;
+			iterator 		NewPastLast = last - erasedSize;
+			iterator		tmp = first;
+
+			while (tmp != last)
 			{
-				_allocator.destroy(ptr);
-				ptr++;
+				_allocator.destroy(&(*first));
+				tmp++;
 			}
 			
-			pointer new_ptr = &(*last);
-			ptr = &(*first);
-			while (new_ptr != _end)
+			iterator	mirror = first;
+			while (&*(tmp) != _end)
 			{
-				_allocator.construct(ptr, *new_ptr);
-				new_ptr++;
-				ptr++;
-			}
-			
-
-			new_ptr = ptr;
-			while (ptr != _end)
-			{
-				_allocator.destroy(ptr);
-				ptr++;
+				_allocator.construct(&(*mirror), *tmp);
+				_allocator.destroy(&(*tmp));
+				tmp++;
+				mirror++;
 			}
 
-			_end = new_ptr;
-			return (iterator(new_ptr));
+			_end -= erasedSize;
+			_size -= erasedSize;
+
+			return (NewPastLast);
 		}
 
 		void			clear()

@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/05 20:15:51 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/07 20:47:20 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 #include <vector>
 #include <map>
 
+
+
+/*
 int main()
 {
 	if (1 > 2)
@@ -77,4 +80,29 @@ int main()
 
 		ft::vector<int>::const_iterator cfit = fit;
 	}
+}
+*/
+
+template <class T>
+void	printSize(ft::vector<T> v) { std::cout << v.size(); }
+
+template <class T>
+void	printSize(std::vector<T> v) {std::cout << v.size(); }
+
+int main(void)
+{
+	ft::vector<std::string> fv(10);
+	std::vector<std::string> stdv(10);
+
+	
+
+	fv.erase(fv.end() - 1);
+	stdv.erase(stdv.end() - 1);
+
+	std::cout << std::endl << "ft_vector: ";
+	printSize(fv);
+
+	std::cout << std::endl << "std_vector: ";
+	printSize(stdv);
+
 }
