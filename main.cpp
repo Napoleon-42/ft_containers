@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/07 20:47:20 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/17 18:31:32 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 #include <vector>
 #include <map>
 
-
+#define TESTED_TYPE int
+#include <list>
 
 /*
 int main()
@@ -84,25 +85,86 @@ int main()
 */
 
 template <class T>
-void	printSize(ft::vector<T> v) { std::cout << v.size(); }
+void	printSize(ft::vector<T> v) { std::cout << v.size() << std::endl; }
 
 template <class T>
-void	printSize(std::vector<T> v) {std::cout << v.size(); }
+void	printSize(std::vector<T> v) {std::cout << v.size() << std::endl; }
 
-int main(void)
+template <class T>
+void	printContent(std::vector<T> v)
 {
-	ft::vector<std::string> fv(10);
-	std::vector<std::string> stdv(10);
+	std::cout << std::endl;
 
-	
+	std::cout << std::setw(13) << "Content std " << std::endl;
+	for(typename std::vector<T>::iterator it = v.begin(); it != v.end(); it++)
+	{
+		std::cout << std::setw(10) << *it << std::endl;
+	}
+		std::cout << std::setw(10) << "[end]" << std::endl;
+	std::cout << std::endl;
+}
 
-	fv.erase(fv.end() - 1);
-	stdv.erase(stdv.end() - 1);
 
-	std::cout << std::endl << "ft_vector: ";
-	printSize(fv);
+template <class T>
+void	printContent(ft::vector<T> v)
+{
+	std::cout << std::endl;
 
-	std::cout << std::endl << "std_vector: ";
-	printSize(stdv);
+	std::cout << std::setw(13) << "Content ft " << std::endl;
+	for(typename ft::vector<T>::iterator it = v.begin(); it != v.end(); it++)
+	{
+		std::cout << std::setw(10) << *it << std::endl;
+	}
+		std::cout << std::setw(10) << "[end]" << std::endl;
+	std::cout << std::endl;
+}
+
+
+int main()
+{
+	std::cout << "STD:" << std::endl << std::endl;
+
+{
+	std::list<TESTED_TYPE> lst;
+	std::list<TESTED_TYPE>::iterator lst_it;
+	for (int i = 1; i < 5; ++i)
+		lst.push_back(i * 3);
+
+	std::vector<TESTED_TYPE> vct(lst.begin(), lst.end());
+	printSize(vct);
+
+	lst_it = lst.begin();
+	for (int i = 1; lst_it != lst.end(); ++i)
+		*lst_it++ = i * 5;
+	vct.assign(lst.begin(), lst.end());
+	printSize(vct);
+
+	vct.insert(vct.end(), lst.rbegin(), lst.rend());
+	printSize(vct);
+}
+
+
+	std::cout << std::endl << std::endl <<  "FT:" << std::endl << std::endl;
+
+{
+	std::list<TESTED_TYPE> lst;
+	std::list<TESTED_TYPE>::iterator lst_it;
+	for (int i = 1; i < 5; ++i)
+		lst.push_back(i * 3);
+
+	ft::vector<TESTED_TYPE> vct(lst.begin(), lst.end());
+	printSize(vct);
+
+	lst_it = lst.begin();
+	for (int i = 1; lst_it != lst.end(); ++i)
+		*lst_it++ = i * 5;
+	vct.assign(lst.begin(), lst.end());
+	printSize(vct);
+
+	vct.insert(vct.end(), lst.rbegin(), lst.rend());
+	printSize(vct);
+}
+
+	return (0);
 
 }

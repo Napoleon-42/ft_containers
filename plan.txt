@@ -1,0 +1,21 @@
+ 	map_standar_"map::" 	
+ 	
+	map_iterator
+ 	map_const_iterator
+	
+	map_element_access
+	map_capacity
+
+	map_operators
+	map_modifiers:
+
+	1>
+		1.1
+		right/left shift
+	
+		...
+
+	2>
+
+ 
+	"vector TYPEDEF for std::except()"

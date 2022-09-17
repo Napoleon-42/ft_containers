@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/07 21:11:53 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/13 21:12:37 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "iterator.hpp"
 #include "enable_if.hpp"
 #include "is_integral.hpp"
+#include "lexicographical_compare.hpp"
 
 #define OFR_ERR "Out of range error: vector::_M_range_check"
 
@@ -236,41 +237,68 @@ namespace ft
 		{
 			while (_size + 1 > _capacity)
 				reserve(_capacity * 2);
+
+			if (_size == 0)
+			{
+				_end++;
+				_size++;
+				_allocator.construct(_begin, value);
+				return (begin());
+			}
+
+			iterator tmp = end();
+			while (tmp != pos)
+			{
+				_allocator.construct(&(*tmp), *(tmp - 1));
+				_allocator.destroy(&(*tmp) - 1);
+				tmp--;
+			}
+			_allocator.construct(&(*pos), value);
+			
+			_size++;
 			_end++;
 
-			pointer ptr = _end - 1;
-			while (ptr != &(*pos))
-			{
-				_allocator.construct(ptr, *(ptr - 1));
-				ptr--;
-			}
-			_allocator.construct(ptr, value);
-
-			return (iterator(ptr));
+			return (pos);
 		}
 
 		void		insert( iterator pos, size_type count, const T& value)
 		{
+			if (count == 1)
+			{
+				insert(pos, value);
+				return ;
+			}
+
 			while (_size + count > _capacity)
 				reserve(_capacity * 2);
+
+			if (pos == end())
+			{
+				_end += count;
+				_size += count;
+				for (pointer tmp = &(*pos); tmp != _end; tmp++)
+					_allocator.construct(tmp, value);
+				return ;
+			}
+
+			pointer tmp = _end + count - 1;
+			pointer mirror = _end - 1;
+			while (mirror != &(*pos) - 1)
+			{
+				_allocator.construct(tmp, *mirror);
+				_allocator.destroy(mirror);
+				tmp--;
+				mirror--;
+			}
+			
+			for(size_type i = 0; i < count; i++)
+			{
+				_allocator.construct(&(*pos), value);
+				pos++;
+			}
+
 			_end += count;
-
-			pointer ptr = _end - 1;
-			pointer past_end = _end - count;
-			while (past_end != &(*pos))
-			{
-				_allocator.construct(ptr, *(past_end - 1));
-				ptr--;
-				past_end--;
-			}
-
-			ptr = &(*pos);
-			while (count > 0)
-			{
-				_allocator.construct(ptr, value);
-				ptr++;
-				count--;
-			}
+			_size += count;
 		}
 
 		template<class InputIt>
@@ -280,25 +308,26 @@ namespace ft
 			difference_type count = last - first;
 			while (_size + count > _capacity)
 				reserve(_capacity * 2);
-			_end += count;
 
-			pointer ptr = _end - 1;
-			pointer past_end = _end - count;
-			while (past_end != &(*pos))
+			pointer tmp = _end + count - 1;
+			pointer mirror = _end - 1;
+			while (mirror != &(*pos) - 1)
 			{
-				_allocator.construct(ptr, *(past_end - 1));
-				ptr--;
-				past_end--;
+				_allocator.construct(tmp, *mirror);
+				_allocator.destroy(mirror);
+				mirror--;
+				tmp--;
 			}
-
-			ptr = &(*pos);
-			while (first != last)
+			
+			for(difference_type i = 0; i < count; i++)
 			{
-				_allocator.construct(ptr, *first);
-				ptr++;
+				_allocator.construct(&(*pos), *first);
 				first++;
+				pos++;
 			}
-		
+
+			_size += count;
+			_end += count;
 		}
 
 		iterator erase( iterator pos)
@@ -400,17 +429,7 @@ namespace ft
 	template<class T, class Allocator>
 	bool	operator<(const vector<T,Allocator>& lhs, const vector<T,Allocator>& rhs)
 	{
-		if (lhs.size() < rhs.size())
-			return (true);
-		else if (lhs.size() > rhs.size())
-			return (false);
-		else if (lhs.size() == rhs.size())
-		{
-			for (unsigned int i = 0; i < lhs.size(); i++)
-				if (lhs[i] < rhs[i]) return (true);
-		}
-
-		return (false);
+		return(lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 	template<class T, class Allocator>
