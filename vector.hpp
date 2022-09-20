@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/13 21:12:37 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/18 20:29:18 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,7 +305,7 @@ namespace ft
 		void		insert( iterator pos, InputIt first, InputIt last,
 		typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 		{
-			difference_type count = last - first;
+			difference_type count = &(*last) - &(*first);
 			while (_size + count > _capacity)
 				reserve(_capacity * 2);
 

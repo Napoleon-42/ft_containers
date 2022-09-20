@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/05 21:38:16 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/21 01:47:24 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <memory>
 #include <functional>
 #include <utility>
+#include <stdexcept>
+#include <exception>
 #include "pair.hpp"
 
 
@@ -44,6 +46,22 @@ namespace ft
 		typedef	typename Allocator::pointer			pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
 
+		class value_compare
+		{  																		 // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
+		  	friend class map;
+			
+			protected:
+			  Compare comp;
+			  value_compare (Compare c) : comp(c) {}  							// constructed with map's comparison object
+
+			public:
+
+			  typedef bool			result_type;
+			  typedef value_type	first_argument_type;
+			  typedef value_type	second_argument_type;
+			  bool operator() (const value_type& x, const value_type& y) const	{ return comp(x.first, y.first); }
+		}
+
 		/*
 		typedef 									iterator;
 		typedef										const_iterator;
@@ -52,6 +70,7 @@ namespace ft
 		*/
 
 		private:
+
 
 		class node
 		{
@@ -66,6 +85,7 @@ namespace ft
 
 			node() : _value(), _left(NULL), _right(NULL), _parent(NULL), _red(true) {} 
 			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(true) {} 
+			node(const node& val) _value(val._value), _left(val._left), _right(val.right), _parent(val._parent), _red(val.red);
 			~node() {}
 		};
 
@@ -77,78 +97,112 @@ namespace ft
 		node&	search_key(const Key& key)
 		{
 			node* tmp_node = _root;
-			/*
-			while(tmp_node->_value.first != key)
-			{
-		
-			}
-			*/
 
+			while(tmp_node->_value.first != key && tmp_node != NULL)
+			{
+				if (key_compare(key, tmp_node->value.first))
+					tmp_node = tmp_node->_left;
+				else
+					tmp_node = tmp_node->_right;
+			}
+			
 			return (tmp_node);
 		}
-
+		
 		public:
 
-		map(const map& other);
-		explicit map(const Compare& comp, const Allocator& alloc = Allocator()) : _allocator(alloc), size(0) {}
+		map(const map& other)
+		{
+			_size = other.get_size();
+			_allocator = other.get_allocator();
+			//insert(other.begin(), other.first());
+		}
+
+		explicit map(const key_comp& comp = key_comp(), const Allocator& alloc = allocator_type()) : _allocator(alloc), size(0) {}
+		
 		//template<class InputIt>
 		//map(InputIt first, InputIt last, const Allocator& alloc = Allocator());
 
 
 		// ELEMENT ACCESS
 
-		T&			at(const Key& key)			{ return (search_key(key).value.second); }
-		const T&	at(const Key& key) const;
-		T&			operator[](const Key& key);	{ return (search_key(key).value.second); }
+		mapped_type&		at(const Key& key)			{ return (search_key(key)->value.second); }
+		const mapped_type&	at(const Key& key) const;	{ return (search_key(key)->value.second); }
+		mapped_type&		operator[](const Key& key);	{ return (search_key(key)->value.second); }
 
 
 
 		//	CAPACITY
 
-		bool		empty() const				{ return (_size == 0); }
-		size_type	size() const				{ return (_size); }
-		size_type	max_size() const			{ return (_allocator.max_size()); }
+		bool		empty() const				{ return (_size == 0); 				}
+		size_type	size() const				{ return (_size); 					}
+		size_type	max_size() const			{ return (_allocator.max_size());	}
 
 
 
 		//	MODIFIERS
 
-		void						clear();
-		//std::pair<iterator, bool> insert(const value_type& value);
+		//void						clear();
+
+		std::pair<iterator, bool> insert(const value_type& value)
+		{
+			if (count(value.first))
+				return (*(search_key(value.first)));
+
+			node 	*tmp_node = _root;
+			while (key_compare(value.first, tmp_node->value.first))
+			{
+				if (key_compare(value.first, tmp_node->value.first))
+					tmp_node = tmp_node->_left;
+				else
+					tmp_node = tmp_node->_right;
+			}
+
+			///	REAL INSERTION PROCCES AFTER FINDING PLACEMENT
+
+				tmp_node = node(....);
+
+
+			///
+
+
+			return (tmp_node);
+		}
+		
 		//std::iterator				insert(iterator hint, const value_type& value);
 		//void						erase(iterator pos);
 		//void						erase(iterator first, iterator last);
 		//size_type					erase(const Key& key);
-		void						swap(map& other);
+		//void						swap(map& other);
 
 
 
 		//	LOOKUP
  
-		size_type									count(const Key& key) const;
+		size_type									count(const Key& key) const	{ return (search_key(key) == NULL ? 0 : 1); }
 
 		//iterator									find(const Key& key) const;
 		//const_iterator							find(const Key& key) const;
 
-		//std::pair<iterator, iterator> 			equal_range(const Key& key);
+		//std::pair<iterator, iterator> 			equal_range(const Key& key) const;
 		//std::pair<const_iterator, const_iteratro> equal_range(const Key& key) const;
 		
-		//iterator									lower_bound(const Key& key);
+		//iterator									lower_bound(const Key& key) const;
 		//const_iterator							lower_bound(const Key& key) const;
 
-		//iterator									upper_bound(const Key& key);
+		//iterator									upper_bound(const Key& key) const;
 		//const_iterator							upper_bound(const Key& key) const;
 
 
 
 		//	OBSERVERS
 
-		key_compare			key_comp() const;
-		map::value_compare	value_comp() const;
+		key_compare			key_comp() const 	{ return (key_compare); 					}
+		map::value_compare	value_comp() const 	{ return (value_compare(key_compare())); 	}
 
 		//	ALLOCATOR
 
-		allocator_type		get_allocator() { return (_allocator); }
+		allocator_type		get_allocator() 	{ return (_allocator); 						}
 
 
 

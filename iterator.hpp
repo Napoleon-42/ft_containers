@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 17:02:00 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/05 19:17:03 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/20 21:08:17 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,10 @@ namespace ft
 			random_access_iterator(const random_access_iterator<U> & it) { _ptr = &(*it); }
 			~random_access_iterator() {}
 
+			pointer	base() { return (_ptr); }
+
 			template<class U>
-			reference 					operator= (const random_access_iterator<U> & it) { _ptr = &(*it); return (*this); }
+			random_access_iterator<T>&	operator= (const random_access_iterator<U> & it) { _ptr = &(*it); return (*this); }
 
 
 
@@ -115,8 +117,8 @@ namespace ft
 
 
 
-			random_access_iterator		operator+(difference_type n) const { random_access_iterator tmp = *this; tmp += n; return (tmp); }
-			random_access_iterator		operator-(difference_type n) const { random_access_iterator tmp = *this; tmp -= n; return (tmp); }
+			random_access_iterator		operator+(difference_type n) const { return random_access_iterator(_ptr + n); }
+			random_access_iterator		operator-(difference_type n) const { return random_access_iterator(_ptr - n); }
 
 
 
@@ -203,9 +205,9 @@ namespace ft
 			~reverse_iterator() {}
 
 			template <class U>
-			reference 					operator= (const reverse_iterator<U> & it) { _ptr = &(*it); return (*this); }
+			reverse_iterator<T>&		operator= (const reverse_iterator<U> & it) { _ptr = &(*it); return (*this); }
 
-
+			value_type					base() { return (_ptr); }
 
 			reference					operator[](difference_type n) 	{ return (*(_ptr + n)); }
 			reference 					operator* () const 				{ return (*_ptr); }
