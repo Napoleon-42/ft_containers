@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/21 01:47:24 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/09/23 18:10:10 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ namespace ft
 			  typedef value_type	first_argument_type;
 			  typedef value_type	second_argument_type;
 			  bool operator() (const value_type& x, const value_type& y) const	{ return comp(x.first, y.first); }
-		}
+		};
 
 		/*
 		typedef 									iterator;
@@ -89,10 +89,10 @@ namespace ft
 			~node() {}
 		};
 
-		node			_root;
-		node			_null_node = node();
+		node			*_root;
 		allocator_type	_allocator;
 		size_type		_size;
+		node			_null_node = node();
 
 		node&	search_key(const Key& key)
 		{
@@ -109,16 +109,73 @@ namespace ft
 			return (tmp_node);
 		}
 		
+		/*
+				X	
+			   / \	
+			  Xl  Y
+				 / \
+				Yl  Yr
+
+		*/
+
+		void	left_rotate(node & x)
+		{
+			node& y = x._right;						// Y is the X->left_node
+
+			y._parent = x._parent;					// Changing Y.parent by X.parent
+
+			if (x._parent == _null_node)			// Changing parent's child node, depending on where X where
+				_root = &(x._right);
+			else if (x == *(x._parent._right))
+				x._parent._right = y;
+			else
+				x._parent._left = y;		
+			
+			x._right = y._left;						// Changing X.right, to Y.left
+
+			x._right.parent = x;					// Changing X.new_right_parent to X
+
+			y._left = x;							// Changing Y.left to X
+
+			x._parent = y;							// Changing X.parent to Y
+		}
+
+		void	right_rotate(node & x)
+		{
+			node& y = x._left;						// Y is the X->right_node
+
+			y._parent = x._parent;					// Changing Y.parent by X.parent
+
+			if (x._parent == _null_node)			// Changing parent's child node, depending on where X where
+				_root = &(x._right);
+			else if (x == *(x._parent._right))
+				x._parent._right = y;
+			else
+				x._parent._left = y;		
+			
+			x._left = y._right;						// Changing X.left, to Y.right
+
+			x._left.parent = x;					// Changing X.new_left_parent to X
+
+			y._right = x;							// Changing Y.right to X
+
+			x._parent = y;							// Changing X.parent to Y
+		}
+
 		public:
 
 		map(const map& other)
 		{
+			_root = &_null_node;
 			_size = other.get_size();
 			_allocator = other.get_allocator();
 			//insert(other.begin(), other.first());
 		}
 
-		explicit map(const key_comp& comp = key_comp(), const Allocator& alloc = allocator_type()) : _allocator(alloc), size(0) {}
+		explicit map(const key_comp& comp = key_comp(), const Allocator& alloc = allocator_type()) : _allocator(alloc), size(0) 
+		{
+			_root = &_null_node;
+		}
 		
 		//template<class InputIt>
 		//map(InputIt first, InputIt last, const Allocator& alloc = Allocator());
@@ -149,6 +206,13 @@ namespace ft
 			if (count(value.first))
 				return (*(search_key(value.first)));
 
+			if (_root == &_null_node)
+			{
+				_root = _allocator.allocate(1);
+				_allocator.construct(node(value, _null_node, _null_node, _null_node, false), _root);
+				return (*_root);
+			}
+
 			node 	*tmp_node = _root;
 			while (key_compare(value.first, tmp_node->value.first))
 			{
@@ -160,8 +224,8 @@ namespace ft
 
 			///	REAL INSERTION PROCCES AFTER FINDING PLACEMENT
 
-				tmp_node = node(....);
-
+				tmp_node = _allocator.allocate(1);
+				//_allocator.construct(tmp_node, ....);
 
 			///
 
