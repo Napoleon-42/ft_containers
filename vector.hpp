@@ -6,12 +6,16 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 16:52:34 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/18 20:29:18 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/01 18:12:09 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
+
+
+#include <iostream>
+
 
 #include <memory>
 #include <stdexcept>
@@ -41,8 +45,8 @@ namespace ft
 
 		typedef	ft::random_access_iterator<T>							iterator;
 		typedef	ft::random_access_iterator<const T>						const_iterator; 
-		typedef	ft::reverse_iterator<T>									reverse_iterator;
-		typedef ft::reverse_iterator<const T>							const_reverse_iterator; 
+		typedef	ft::reverse_iterator<iterator>							reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator; 
 
 
 		typedef	typename ft::iterator_traits<iterator>::difference_type	difference_type;
@@ -149,11 +153,11 @@ namespace ft
 		const_iterator	end() const		{ return (const_iterator(_end)); }
 
 	
-		reverse_iterator		rbegin() 		{ return (reverse_iterator(_end)); }
-		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(_end)); }
+		reverse_iterator		rbegin() 		{ return (reverse_iterator(end())); }
+		const_reverse_iterator	rbegin() const	{ return (const_reverse_iterator(end())); }
 		
-		reverse_iterator		rend() 			{ return (reverse_iterator(_begin)); }
-		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(_begin)); }
+		reverse_iterator		rend() 			{ return (reverse_iterator(begin())); }
+		const_reverse_iterator	rend() const	{ return (const_reverse_iterator(begin())); }
 
 
 
@@ -269,7 +273,7 @@ namespace ft
 				return ;
 			}
 
-			while (_size + count > _capacity)
+			while (_size + 1 > _capacity)
 				reserve(_capacity * 2);
 
 			if (pos == end())
@@ -305,7 +309,9 @@ namespace ft
 		void		insert( iterator pos, InputIt first, InputIt last,
 		typename ft::enable_if<!ft::is_integral<InputIt>::value, InputIt>::type* = NULL)
 		{
-			difference_type count = &(*last) - &(*first);
+			int count = 0;
+			for (InputIt tmp = first; tmp != last; tmp++)
+				count ++;
 			while (_size + count > _capacity)
 				reserve(_capacity * 2);
 
@@ -348,8 +354,8 @@ namespace ft
 		{
 			difference_type	erasedSize = last - first;
 			iterator 		NewPastLast = last - erasedSize;
-			iterator		tmp = first;
 
+			iterator	tmp = first;
 			while (tmp != last)
 			{
 				_allocator.destroy(&(*first));
@@ -357,10 +363,10 @@ namespace ft
 			}
 			
 			iterator	mirror = first;
-			while (&*(tmp) != _end)
+			while (tmp.base() != _end)
 			{
-				_allocator.construct(&(*mirror), *tmp);
-				_allocator.destroy(&(*tmp));
+				_allocator.construct(mirror.base(), *tmp);
+				_allocator.destroy(tmp.base());
 				tmp++;
 				mirror++;
 			}

@@ -6,20 +6,77 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/20 21:14:16 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/01 18:42:10 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "stack.hpp"
 #include "vector.hpp"
+//#include "map.hpp"
 #include <iostream>
 #include <iomanip>
 #include <stack>
 #include <vector>
 #include <map>
+#include <complex>
+#include <valarray>
 
 #define TESTED_TYPE int
 #include <list>
+
+// --- Class foo
+template <typename T>
+class foo {
+	public:
+		typedef T	value_type;
+
+		foo(void) : value(), _verbose(false) { };
+		foo(value_type src, const bool verbose = false) : value(src), _verbose(verbose) { };
+		foo(foo const &src, const bool verbose = false) : value(src.value), _verbose(verbose) { };
+		~foo(void) { if (this->_verbose) std::cout << "~foo::foo()" << std::endl; };
+		void m(void) { std::cout << "foo::m called [" << this->value << "]" << std::endl; };
+		void m(void) const { std::cout << "foo::m const called [" << this->value << "]" << std::endl; };
+		foo &operator=(value_type src) { this->value = src; return *this; };
+		foo &operator=(foo const &src) {
+			if (this->_verbose || src._verbose)
+				std::cout << "foo::operator=(foo) CALLED" << std::endl;
+			this->value = src.value;
+			return *this;
+		};
+		value_type	getValue(void) const { return this->value; };
+		void		switchVerbose(void) { this->_verbose = !(this->_verbose); };
+
+		operator value_type(void) const {
+			return value_type(this->value);
+		}
+	private:
+		value_type	value;
+		bool		_verbose;
+};
+
+template <typename T>
+std::ostream	&operator<<(std::ostream &o, foo<T> const &bar) {
+	o << bar.getValue();
+	return o;
+}
+// --- End of class foo
+
+template <typename T>
+T	inc(T it, int n)
+{
+	while (n-- > 0)
+		++it;
+	return (it);
+}
+
+template <typename T>
+T	dec(T it, int n)
+{
+	while (n-- > 0)
+		--it;
+	return (it);
+}
 
 /*
 int main()
@@ -82,51 +139,7 @@ int main()
 		ft::vector<int>::const_iterator cfit = fit;
 	}
 }
-*/void	prepost_incdec(ft::vector<TESTED_TYPE> &vct)
-{
-	ft::vector<TESTED_TYPE>::iterator it = vct.begin();
-	ft::vector<TESTED_TYPE>::iterator it_tmp;
-
-	std::cout << "Pre inc" << std::endl;
-	it_tmp = ++it;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-
-	std::cout << "Pre dec" << std::endl;
-	it_tmp = --it;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-
-	std::cout << "Post inc" << std::endl;
-	it_tmp = it++;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-
-	std::cout << "Post dec" << std::endl;
-	it_tmp = it--;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-	std::cout << "###############################################" << std::endl;
-}
-
-void	prepost_incdec(std::vector<TESTED_TYPE> &vct)
-{
-	std::vector<TESTED_TYPE>::iterator it = vct.begin();
-	std::vector<TESTED_TYPE>::iterator it_tmp;
-
-	std::cout << "Pre inc" << std::endl;
-	it_tmp = ++it;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-
-	std::cout << "Pre dec" << std::endl;
-	it_tmp = --it;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-
-	std::cout << "Post inc" << std::endl;
-	it_tmp = it++;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-
-	std::cout << "Post dec" << std::endl;
-	it_tmp = it--;
-	std::cout << *it_tmp << " | " << *it << std::endl;
-	std::cout << "###############################################" << std::endl;
-}
+*/
 
 template <class T>
 void	printSize(ft::vector<T> v) { std::cout << v.size() << std::endl; }
@@ -163,21 +176,29 @@ void	printContent(ft::vector<T> v)
 	std::cout << std::endl;
 }
 
-
-int main()
+template <typename Ite_1, typename Ite_2>
+void ft_eq_ope(const Ite_1 &first, const Ite_2 &second, const bool redo = 1)
 {
-	std::cout << "STD:" << std::endl << std::endl;
+	std::cout << (first < second) << std::endl;
+	std::cout << (first <= second) << std::endl;
+	std::cout << (first > second) << std::endl;
+	std::cout << (first >= second) << std::endl;
+	std::cout << std::endl;
+	if (redo)
+		ft_eq_ope(second, first, 0);
+}
 
+int		main(void)
 {
+	{
 	
 	const int size = 5;
 	std::vector<TESTED_TYPE> vct(size);
-	std::vector<TESTED_TYPE>::iterator it = vct.begin();
-	std::vector<TESTED_TYPE>::const_iterator ite = vct.begin();
+	std::vector<TESTED_TYPE>::reverse_iterator it = vct.rbegin();
+	std::vector<TESTED_TYPE>::const_reverse_iterator ite = vct.rbegin();
 
 	for (int i = 0; i < size; ++i)
 		it[i] = (size - i) * 5;
-	prepost_incdec(vct);
 
 	it = it + 5;
 	it = 1 + it;
@@ -188,29 +209,25 @@ int main()
 	*(it -= 2) = 42;
 	*(it += 2) = 21;
 
-	std::cout << "const_ite +=: " << *(ite += 2) << std::endl;
-	std::cout << "const_ite -=: " << *(ite -= 2) << std::endl;
+	std::cout << "const_ite +=/-=: " << *(ite += 2) << " | " << *(ite -= 2) << std::endl;
 
 	std::cout << "(it == const_it): " << (ite == it) << std::endl;
 	std::cout << "(const_ite - it): " << (ite - it) << std::endl;
 	std::cout << "(ite + 3 == it): " << (ite + 3 == it) << std::endl;
 
-	printSize(vct, true);
-	return (0);
-}
+	}
 
+	std::cout << "FT:" << std::endl;
 
-	std::cout << std::endl << std::endl <<  "FT:" << std::endl << std::endl;
-
-{
+	{
+	
 	const int size = 5;
 	ft::vector<TESTED_TYPE> vct(size);
-	ft::vector<TESTED_TYPE>::iterator it = vct.begin();
-	ft::vector<TESTED_TYPE>::const_iterator ite = vct.begin();
+	ft::vector<TESTED_TYPE>::reverse_iterator it = vct.rbegin();
+	ft::vector<TESTED_TYPE>::const_reverse_iterator ite = vct.rbegin();
 
 	for (int i = 0; i < size; ++i)
 		it[i] = (size - i) * 5;
-	prepost_incdec(vct);
 
 	it = it + 5;
 	it = 1 + it;
@@ -221,17 +238,14 @@ int main()
 	*(it -= 2) = 42;
 	*(it += 2) = 21;
 
-	std::cout << "const_ite +=: " << *(ite += 2) << std::endl;
-	std::cout << "const_ite -=: " << *(ite -= 2) << std::endl;
+	std::cout << "const_ite +=/-=: " << *(ite += 2) << " | " << *(ite -= 2) << std::endl;
 
 	std::cout << "(it == const_it): " << (ite == it) << std::endl;
 	std::cout << "(const_ite - it): " << (ite - it) << std::endl;
 	std::cout << "(ite + 3 == it): " << (ite + 3 == it) << std::endl;
 
-	printSize(vct, true);
+	}
+
 	return (0);
 }
 
-	return (0);
-
-}

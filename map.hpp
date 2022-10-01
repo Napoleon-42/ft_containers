@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/23 18:10:10 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/01 17:46:51 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@
 #include <exception>
 #include "pair.hpp"
 
+#include <iostream>
+
+#define true	RED;
+#define false	BLACK;
 
 namespace ft
 {
@@ -71,11 +75,11 @@ namespace ft
 
 		private:
 
-
 		class node
 		{
 
 			public:
+
 
 			value_type	_value;
 			node*		_left;
@@ -83,16 +87,17 @@ namespace ft
 			node*		_parent;
 			bool		_red;
 
-			node() : _value(), _left(NULL), _right(NULL), _parent(NULL), _red(true) {} 
-			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(true) {} 
-			node(const node& val) _value(val._value), _left(val._left), _right(val.right), _parent(val._parent), _red(val.red);
+			node() : _value(), _left(NULL), _right(NULL), _parent(NULL), _red(RED) {}
+			node(bool color) : _red(color) {}
+			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(RED) {} 
+			node(const node& val) : _value(val._value), _left(val._left), _right(val.right), _parent(val._parent), _red(val.red) {}
 			~node() {}
 		};
 
 		node			*_root;
 		allocator_type	_allocator;
 		size_type		_size;
-		node			_null_node = node();
+		node			_null_node = node(BLACK);
 
 		node&	search_key(const Key& key)
 		{
@@ -155,11 +160,30 @@ namespace ft
 			
 			x._left = y._right;						// Changing X.left, to Y.right
 
-			x._left.parent = x;					// Changing X.new_left_parent to X
+			x._left.parent = x;						// Changing X.new_left_parent to X
 
 			y._right = x;							// Changing Y.right to X
 
 			x._parent = y;							// Changing X.parent to Y
+		}
+
+
+		void	changeColor(node & node) { node._red = !node._red; }
+
+		// we have 3 main cases:
+		//	1. ROOT == NULL -> new node become BLACK and root
+		//  2. everything is alright, we do nothing
+		//  3. new_node and their
+		void	insertFixUp(node & newNode)
+		{
+			node &parent = newNode._parent;
+			node &grandParent = parent._parent;
+			node &uncle = (parent == grandParent._left ? grandParent._right : grandParent._left);
+
+			if (newNode._red == RED && newNode._parent-> == RED) // two concecutive red-nodes
+			{
+				(void);
+			}
 		}
 
 		public:
@@ -182,7 +206,7 @@ namespace ft
 
 
 		// ELEMENT ACCESS
-
+d
 		mapped_type&		at(const Key& key)			{ return (search_key(key)->value.second); }
 		const mapped_type&	at(const Key& key) const;	{ return (search_key(key)->value.second); }
 		mapped_type&		operator[](const Key& key);	{ return (search_key(key)->value.second); }
@@ -203,32 +227,33 @@ namespace ft
 
 		std::pair<iterator, bool> insert(const value_type& value)
 		{
-			if (count(value.first))
+			if (count(value.first))																		//	KEY already exist in the map
 				return (*(search_key(value.first)));
 
-			if (_root == &_null_node)
+			if (_root == &_null_node)																	// The map was empty
 			{
 				_root = _allocator.allocate(1);
-				_allocator.construct(node(value, _null_node, _null_node, _null_node, false), _root);
+				_allocator.construct(node(value, _null_node, _null_node, _null_node, BLACK), _root);
 				return (*_root);
 			}
 
-			node 	*tmp_node = _root;
-			while (key_compare(value.first, tmp_node->value.first))
+			node 	*x = _root;
+			node	*y = &_null_node;
+			while (x != _null_node)
 			{
-				if (key_compare(value.first, tmp_node->value.first))
-					tmp_node = tmp_node->_left;
+				y = x;
+				if (key_compare(value.first, x->value.first))
+					x = x->_left;
 				else
-					tmp_node = tmp_node->_right;
+					x = x->_right;
 			}
-
-			///	REAL INSERTION PROCCES AFTER FINDING PLACEMENT
-
-				tmp_node = _allocator.allocate(1);
-				//_allocator.construct(tmp_node, ....);
-
-			///
-
+	
+			node *tmp_node = _allocator.allocate(1);
+			_allocator.construct(node(value, _null_node, _null_node, y, RED));
+			if (key_compare(tmp_node->value.first, y->value.first))
+				y->_left = tmp_node;
+			else
+				y->_right = tmp_node;
 
 			return (tmp_node);
 		}
@@ -267,7 +292,6 @@ namespace ft
 		//	ALLOCATOR
 
 		allocator_type		get_allocator() 	{ return (_allocator); 						}
-
 
 
 	};

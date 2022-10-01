@@ -1,13 +1,14 @@
- 	map_standar_"map::" 	
+ 	map_standar_"map::" 			Y
  	
-	map_iterator
- 	map_const_iterator
+	map_iterator				x
+ 	map_const_iterator			x
 	
-	map_element_access
-	map_capacity
+	map_visual				x
+	map_insert / map_element_access		x
+	map_capacity				x
 
-	map_operators
-	map_modifiers:
+	map_operators				x
+	map_modifiers:				x
 
 	1>
 		1.1
