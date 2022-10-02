@@ -1,7 +1,14 @@
  	map_standar_"map::" 			Y
  	
+	file compile				xxxx
+
+
 	map_iterator				x
+		increment / decrement x
+
  	map_const_iterator			x
+		search_for_help_lul		x
+		test's x
 	
 	map_visual				x
 	map_insert / map_element_access		x

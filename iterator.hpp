@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 17:02:00 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/01 18:29:45 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/02 18:44:07 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ namespace ft
 	struct output_iterator_tag {};
 	struct input_iterator_tag {};
 	struct forward_iterator_tag : public input_iterator_tag {};
-	struct biderectional_iterator_tag : public forward_iterator_tag {};
-	struct random_access_iterator_tag : public biderectional_iterator_tag {};
+	struct bidirectional_iterator_tag : public forward_iterator_tag {};
+	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 	
 	//	ITERATOR TRAITS
 
@@ -94,7 +94,7 @@ namespace ft
 			random_access_iterator() : _ptr (NULL) {}
 			explicit random_access_iterator(pointer ptr) : _ptr (ptr) {}
 			template<class U>
-			random_access_iterator(const random_access_iterator<U> & it) { _ptr = &(*it); }
+			random_access_iterator(const random_access_iterator<U> & it) { _ptr = it.base(); }
 			~random_access_iterator() {}
 
 			pointer	base() const { return (_ptr); }
@@ -296,6 +296,61 @@ namespace ft
 
 	template <class T1, class T2>
 	typename	reverse_iterator<T1>::difference_type operator+(const reverse_iterator<T1>& lit, const reverse_iterator<T2>& rit)	{ return (&(*lit) + &(*rit)); }
+
+
+
+	template<class T>
+	class map_iterator : public iterator<bidirectional_iterator_tag, T>
+	{
+		public:
+			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type			value_type;
+			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category		iterator_type;
+			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type		difference_type;
+			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference				reference;
+			typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer				pointer;
+
+		private:
+			
+			pointer *_node_ptr;
+
+			void			increment() 
+			{
+
+			}
+
+			void			decrement() 
+			{
+
+			}
+
+		public:
+		
+			map_iterator() 								: _node_ptr(NULL) {}
+
+			explicit
+			map_iterator(pointer  node_ptr) 			: _node_ptr(node_ptr) {}
+
+			template<class U>
+			map_iterator(const map_iterator<U> & it)	{ _node_ptr = it.base(); }
+
+			~map_iterator() {};
+
+
+			pointer base() const { return (_node_ptr); }
+
+
+			template<class U>
+			map_iterator<T>	operator= (const map_iterator<U> & it) { _node_ptr = it.base(); return (*this); }
+
+			reference		operator*() const		{ return (_node_ptr->_value); 		}
+			pointer			operator->() const		{ return (&(_node_ptr->_value));	}
+
+			map_iterator<T>&	operator++()		{ increment(); return (*this);	}
+			map_iterator<T>&	operator--()		{ decrement(); return (*this);	}
+			map_iterator<T>		operator++(int)		{ map_iterator<T> tmp = *this; increment(); return tmp;	}
+			map_iterator<T>		operator--(int)		{ map_iterator<T> tmp = *this; decrement(); return tmp;	}
+					
+	};
 };
 
 

@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/01 17:46:51 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/02 19:26:56 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@
 #include <stdexcept>
 #include <exception>
 #include "pair.hpp"
-
+#include "iterator.hpp"
 #include <iostream>
 
-#define true	RED;
-#define false	BLACK;
+#define RED		true
+#define BLACK	false
 
 namespace ft
 {
@@ -50,30 +50,33 @@ namespace ft
 		typedef	typename Allocator::pointer			pointer;
 		typedef typename Allocator::const_pointer	const_pointer;
 
-		class value_compare
-		{  																		 // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
+
+		class value_compare	{  																		 // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
 		  	friend class map;
-			
 			protected:
-			  Compare comp;
-			  value_compare (Compare c) : comp(c) {}  							// constructed with map's comparison object
-
+				Compare comp;
+				value_compare (Compare c) : comp(c) {}  							// constructed with map's comparison object
 			public:
-
-			  typedef bool			result_type;
-			  typedef value_type	first_argument_type;
-			  typedef value_type	second_argument_type;
-			  bool operator() (const value_type& x, const value_type& y) const	{ return comp(x.first, y.first); }
+				typedef bool			result_type;
+				typedef value_type	first_argument_type;
+				typedef value_type	second_argument_type;
+				bool operator() (const value_type& x, const value_type& y) const	{ return comp(x.first, y.first); }
 		};
 
+	
+		typedef	map_iterator<value_type>			iterator;
+		typedef	map_iterator<const value_type>		const_iterator;
+
 		/*
-		typedef 									iterator;
-		typedef										const_iterator;
 		typedef										reverse_iterator;
 		typedef 									const_reverse_iterator;
 		*/
 
 		private:
+
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+		//_______________________NODE_CLASS________________________//
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 
 		class node
 		{
@@ -81,48 +84,53 @@ namespace ft
 			public:
 
 
-			value_type	_value;
-			node*		_left;
-			node*		_right;
-			node*		_parent;
-			bool		_red;
+			value_type				_value;
+			node*					_left;
+			node*					_right;
+			node*					_parent;
+			std::allocator<node>	_node_allocator;
+			bool					_red;
 
 			node() : _value(), _left(NULL), _right(NULL), _parent(NULL), _red(RED) {}
 			node(bool color) : _red(color) {}
 			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(RED) {} 
-			node(const node& val) : _value(val._value), _left(val._left), _right(val.right), _parent(val._parent), _red(val.red) {}
+			node(const node& val) : _value(val._value), _left(val._left), _right(val._right), _parent(val._parent), _red(val._red) {}
 			~node() {}
+
+			friend class map_iterator<value_type>;
 		};
 
-		node			*_root;
-		allocator_type	_allocator;
-		size_type		_size;
-		node			_null_node = node(BLACK);
 
-		node&	search_key(const Key& key)
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+		//_______________________MAP_MEMBERS_______________________//
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+
+		node				*_root;
+		key_compare			_keycomp;
+		allocator_type		_allocator;
+		size_type			_size;
+		node				_null_node;
+
+
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+		//______________________PRIVATE_FUNCTIONS__________________//
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+
+		node&	search_key(const Key& key) const
 		{
 			node* tmp_node = _root;
 
-			while(tmp_node->_value.first != key && tmp_node != NULL)
+			while(tmp_node->_value.first != key && tmp_node != &_null_node)
 			{
-				if (key_compare(key, tmp_node->value.first))
+				if (_keycomp(key, tmp_node->_value.first))
 					tmp_node = tmp_node->_left;
 				else
 					tmp_node = tmp_node->_right;
 			}
 			
-			return (tmp_node);
+			return ((*tmp_node));
 		}
 		
-		/*
-				X	
-			   / \	
-			  Xl  Y
-				 / \
-				Yl  Yr
-
-		*/
-
 		void	left_rotate(node & x)
 		{
 			node& y = x._right;						// Y is the X->left_node
@@ -180,36 +188,50 @@ namespace ft
 			node &grandParent = parent._parent;
 			node &uncle = (parent == grandParent._left ? grandParent._right : grandParent._left);
 
-			if (newNode._red == RED && newNode._parent-> == RED) // two concecutive red-nodes
+			if (newNode._red == RED && newNode._parent->_red == RED) // two concecutive red-nodes
 			{
-				(void);
+				(void) newNode;
 			}
 		}
 
+
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+		//______________________PUBLIC_FUNCTIONS___________________//
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		public:
 
 		map(const map& other)
 		{
 			_root = &_null_node;
-			_size = other.get_size();
+			_keycomp = other.key_comp();
+			_size = other.size();
+			_null_node = node();
 			_allocator = other.get_allocator();
 			//insert(other.begin(), other.first());
+			(void) other;
 		}
 
-		explicit map(const key_comp& comp = key_comp(), const Allocator& alloc = allocator_type()) : _allocator(alloc), size(0) 
+		explicit map(const key_compare& comp = key_compare(), const Allocator& alloc = allocator_type()) :
+		_keycomp(comp),
+		_allocator(alloc),
+		_size(0),
+		_null_node(node()) 
 		{
 			_root = &_null_node;
 		}
-		
-		//template<class InputIt>
-		//map(InputIt first, InputIt last, const Allocator& alloc = Allocator());
 
+/*		
+		template<class InputIt>
+		map(InputIt first, InputIt last, const Allocator& alloc = Allocator()) : _allocator(alloc)
+		{
+		}
+*/
 
 		// ELEMENT ACCESS
-d
+
 		mapped_type&		at(const Key& key)			{ return (search_key(key)->value.second); }
-		const mapped_type&	at(const Key& key) const;	{ return (search_key(key)->value.second); }
-		mapped_type&		operator[](const Key& key);	{ return (search_key(key)->value.second); }
+		const mapped_type&	at(const Key& key) const	{ return (search_key(key)->value.second); }
+		mapped_type&		operator[](const Key& key)	{ return (search_key(key)->value.second); }
 
 
 
@@ -268,7 +290,7 @@ d
 
 		//	LOOKUP
  
-		size_type									count(const Key& key) const	{ return (search_key(key) == NULL ? 0 : 1); }
+		size_type									count(const Key& key) const	{ return (search_key(key) == _null_node ? 0 : 1); }
 
 		//iterator									find(const Key& key) const;
 		//const_iterator							find(const Key& key) const;
@@ -286,7 +308,7 @@ d
 
 		//	OBSERVERS
 
-		key_compare			key_comp() const 	{ return (key_compare); 					}
+		key_compare			key_comp() const 	{ return (_keycomp); 					}
 		map::value_compare	value_comp() const 	{ return (value_compare(key_compare())); 	}
 
 		//	ALLOCATOR
