@@ -1,10 +1,10 @@
  	map_standar_"map::" 			Y
  	
-	file compile				xxxx
+	file compile, 09/10   xxx
 
 
 	map_iterator				x
-		increment / decrement x
+		increment / decrement 	x
 
  	map_const_iterator			x
 		search_for_help_lul		x

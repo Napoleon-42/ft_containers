@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/02 19:02:57 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/09 01:09:16 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #define TESTED_TYPE int
 #include <list>
 
+/*
 // --- Class foo
 template <typename T>
 class foo {
@@ -78,6 +79,7 @@ T	dec(T it, int n)
 		--it;
 	return (it);
 }
+*/
 
 /*
 template <class T>
@@ -208,8 +210,8 @@ int main()
 
 		for (int i = 0; i < 42 ; i++)
 		{
-		/*	std_map.insert(std::make_pair<i, "String.">);
-			ft_map.insert(ft::make_pair<i, "String.">); */
+			std_map.insert(std::make_pair(i, "String."));
+			ft_map.insert(ft::make_pair(i, "String.")); 
 		}
 	}
 

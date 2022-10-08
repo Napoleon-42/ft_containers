@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 17:02:00 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/02 18:44:07 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/08 13:33:15 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,7 +315,7 @@ namespace ft
 
 			void			increment() 
 			{
-
+				
 			}
 
 			void			decrement() 

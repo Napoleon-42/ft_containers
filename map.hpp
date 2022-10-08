@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/02 19:26:56 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/09 01:25:10 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,20 @@ namespace ft
 			node(bool color) : _red(color) {}
 			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(RED) {} 
 			node(const node& val) : _value(val._value), _left(val._left), _right(val._right), _parent(val._parent), _red(val._red) {}
+
 			~node() {}
+
+			void	changeColor() { _red = !_red; }
+			
+
+			bool	operator==(const node & val)	{return(val._value == this->_value &&
+																			val._right == this->_right && 
+																			val._left == this->_left && 
+																			val._red == this->_red);	}
 
 			friend class map_iterator<value_type>;
 		};
+
 
 
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
@@ -116,7 +126,7 @@ namespace ft
 		//______________________PRIVATE_FUNCTIONS__________________//
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 
-		node&	search_key(const Key& key) const
+		node*	search_key(const Key& key) const
 		{
 			node* tmp_node = _root;
 
@@ -128,7 +138,7 @@ namespace ft
 					tmp_node = tmp_node->_right;
 			}
 			
-			return ((*tmp_node));
+			return (tmp_node);
 		}
 		
 		void	left_rotate(node & x)
@@ -176,22 +186,62 @@ namespace ft
 		}
 
 
-		void	changeColor(node & node) { node._red = !node._red; }
 
-		// we have 3 main cases:
-		//	1. ROOT == NULL -> new node become BLACK and root
-		//  2. everything is alright, we do nothing
-		//  3. new_node and their
-		void	insertFixUp(node & newNode)
+		node&	createNode(node & nNode) { node* ret = _allocator.allocate(1); _allocator.construct(ret, nNode); return (ret); }
+
+		
+		//						INSERT FIXUP
+		void	insertFixUp(node * newNode)
 		{
-			node &parent = newNode._parent;
-			node &grandParent = parent._parent;
-			node &uncle = (parent == grandParent._left ? grandParent._right : grandParent._left);
-
-			if (newNode._red == RED && newNode._parent->_red == RED) // two concecutive red-nodes
+			while (newNode->_parent._red == RED)
 			{
-				(void) newNode;
+				if (newNode->_parent == newNode->_parent->_parent->_right)
+				{
+						if (newNode->_parent->parent->left.color == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
+						{
+							newNode->_parent->parent->left->changeColor();
+							newNode->parent->changeColor();
+							newNode->parent->parent->changeColor();
+						}
+						else										//	PUSHING THE NODE, BY ROTATING AT GRANDPARENT 
+						{	
+							if (newNode == newNode->parent->left)			// ALLING ON THE RIGHT BRANCHING
+							{
+								newNode = newNode->parent;
+								left_rotate(*newNode);
+							}
+							newNode->parent->changeColor();
+							newNode->parent->parent->changeColor();
+							right_rotate(newNode->parent->parent);
+						}
+				}
+				
+				
+				// THE ALGO BELLOW IS STRICLY THE SAME, FROM AN OTHER PARENT/GP, POS'S.
+				else
+				{
+						if (newNode->_parent->parent->_right.color == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
+						{
+							newNode->_parent->parent->_right->changeColor();
+							newNode->parent->changeColor();
+							newNode->parent->parent->changeColor();
+						}
+						else										//	PUSHING THE NODE, BY ROTATING AT GRANDPARENT 
+						{	
+							if (newNode == newNode->parent->_right)			// ALLING ON THE RIGHT BRANCHING
+							{
+								newNode = newNode->parent;
+								right_rotate(*newNode);
+							}
+							newNode->parent->changeColor();
+							newNode->parent->parent->changeColor();
+							left_rotate(newNode->parent->parent);
+						}
+						
+				}
 			}
+			if (_root == newNode)									// SETTING ROOT TO BLACK
+				_root->changeColor();
 		}
 
 
@@ -200,7 +250,7 @@ namespace ft
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		public:
 
-		map(const map& other)
+		map(const map& other) : _null_node(node(BLACK))
 		{
 			_root = &_null_node;
 			_keycomp = other.key_comp();
@@ -215,7 +265,7 @@ namespace ft
 		_keycomp(comp),
 		_allocator(alloc),
 		_size(0),
-		_null_node(node()) 
+		_null_node(node(BLACK)) 
 		{
 			_root = &_null_node;
 		}
@@ -227,11 +277,11 @@ namespace ft
 		}
 */
 
-		// ELEMENT ACCESS
+		// ELEMENT ACCESS		- A REFAIRE
 
-		mapped_type&		at(const Key& key)			{ return (search_key(key)->value.second); }
-		const mapped_type&	at(const Key& key) const	{ return (search_key(key)->value.second); }
-		mapped_type&		operator[](const Key& key)	{ return (search_key(key)->value.second); }
+		//mapped_type&		at(const Key& key)			{ return (search_key(key)->value.second); }
+		//const mapped_type&	at(const Key& key) const	{ return (search_key(key)->value.second); }
+		//mapped_type&		operator[](const Key& key)	{ return (search_key(key)->value.second); }
 
 
 
@@ -249,35 +299,45 @@ namespace ft
 
 		std::pair<iterator, bool> insert(const value_type& value)
 		{
-			if (count(value.first))																		//	KEY already exist in the map
-				return (*(search_key(value.first)));
-
-			if (_root == &_null_node)																	// The map was empty
+			if (search_key(value.first) != &_null_node)
+				return (
+					make_pair(
+						iterator(search_key(value)),
+						false
+					)
+				);
+			//						NEW NODE ALLOCAION AND INSERTION			
+			
+			node* tmp = _root;
+			while (1)
 			{
-				_root = _allocator.allocate(1);
-				_allocator.construct(node(value, _null_node, _null_node, _null_node, BLACK), _root);
-				return (*_root);
-			}
-
-			node 	*x = _root;
-			node	*y = &_null_node;
-			while (x != _null_node)
-			{
-				y = x;
-				if (key_compare(value.first, x->value.first))
-					x = x->_left;
+				if (_root == &_null_node){_root == createNode(node(value, _null_node, _null_node, *tmp, RED)); break;}
+				if (_keycomp(value.first, tmp->_value.first))
+				{
+					if (tmp->_left == &_null_node){tmp->_left = createNode(node(value, _null_node, _null_node, *tmp, RED));	break;}
+					tmp = tmp->_left;
+				}
 				else
-					x = x->_right;
+				{
+					if (tmp->_right == &_null_node){tmp->_right = createNode(node(value, _null_node, _null_node, *tmp, RED));	break;}
+					tmp = tmp->_right;
+				}
 			}
-	
-			node *tmp_node = _allocator.allocate(1);
-			_allocator.construct(node(value, _null_node, _null_node, y, RED));
-			if (key_compare(tmp_node->value.first, y->value.first))
-				y->_left = tmp_node;
-			else
-				y->_right = tmp_node;
+			_size++;
+			//
+			//	create a node with 'createNode' left|right|_root possisions.
+			//	also allocate the node, and give it a parent node or _null_node (for first).
+			//	node * tmp - point to the newly created node.
+			//
+			//
+													// TEST :
+													if (value.first != tmp->_value.first)
+														throw std::exception();
+			//
+			
 
-			return (tmp_node);
+			insertFixUp(tmp);
+			return (make_pair(iterator(tmp), true));
 		}
 		
 		//std::iterator				insert(iterator hint, const value_type& value);
@@ -290,7 +350,7 @@ namespace ft
 
 		//	LOOKUP
  
-		size_type									count(const Key& key) const	{ return (search_key(key) == _null_node ? 0 : 1); }
+		size_type									count(const Key& key) const	{ return (search_key(key) == &_null_node ? 0 : 1); }
 
 		//iterator									find(const Key& key) const;
 		//const_iterator							find(const Key& key) const;
