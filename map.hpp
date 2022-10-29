@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/09 01:25:10 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/10/29 20:08:14 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include <stdexcept>
 #include <exception>
 #include "pair.hpp"
-#include "iterator.hpp"
+#include "map_iterator.hpp"
 #include <iostream>
 
 #define RED		true
@@ -34,6 +34,12 @@ namespace ft
 			class Allocator = std::allocator<ft::pair<const Key, T> > 
 			> class map
 	{
+
+
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+		//_______________________MEMBER_TYPES______________________//
+		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+
 		public:
 
 		typedef Key									key_type;
@@ -51,11 +57,11 @@ namespace ft
 		typedef typename Allocator::const_pointer	const_pointer;
 
 
-		class value_compare	{  																		 // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
+		class value_compare	{  										 // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
 		  	friend class map;
 			protected:
 				Compare comp;
-				value_compare (Compare c) : comp(c) {}  							// constructed with map's comparison object
+				value_compare (Compare c) : comp(c) {}  			// constructed with map's comparison object
 			public:
 				typedef bool			result_type;
 				typedef value_type	first_argument_type;
@@ -63,17 +69,10 @@ namespace ft
 				bool operator() (const value_type& x, const value_type& y) const	{ return comp(x.first, y.first); }
 		};
 
-	
-		typedef	map_iterator<value_type>			iterator;
-		typedef	map_iterator<const value_type>		const_iterator;
-
-		/*
-		typedef										reverse_iterator;
-		typedef 									const_reverse_iterator;
-		*/
 
 		private:
 
+		friend class map_iterator;
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//_______________________NODE_CLASS________________________//
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
@@ -93,7 +92,8 @@ namespace ft
 
 			node() : _value(), _left(NULL), _right(NULL), _parent(NULL), _red(RED) {}
 			node(bool color) : _red(color) {}
-			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(RED) {} 
+			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(RED) {}
+			node(value_type val, node* left, node* right, node* parent, bool color) : _value(val), _left(left), _right(right), _parent(parent), _red(color) {} 
 			node(const node& val) : _value(val._value), _left(val._left), _right(val._right), _parent(val._parent), _red(val._red) {}
 
 			~node() {}
@@ -106,10 +106,21 @@ namespace ft
 																			val._left == this->_left && 
 																			val._red == this->_red);	}
 
-			friend class map_iterator<value_type>;
 		};
+		
 
+		public:
 
+	
+		typedef	map_iterator<node>			iterator;
+		typedef	map_iterator<const node>	const_iterator;
+
+		/*
+		typedef										reverse_iterator;
+		typedef 									const_reverse_iterator;
+		*/
+
+		private:
 
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//_______________________MAP_MEMBERS_______________________//
@@ -143,76 +154,76 @@ namespace ft
 		
 		void	left_rotate(node & x)
 		{
-			node& y = x._right;						// Y is the X->left_node
+			node& y = *x._right;						// Y is the X->left_node
 
 			y._parent = x._parent;					// Changing Y.parent by X.parent
 
-			if (x._parent == _null_node)			// Changing parent's child node, depending on where X where
-				_root = &(x._right);
-			else if (x == *(x._parent._right))
-				x._parent._right = y;
+			if (x._parent == &_null_node)			// Changing parent's child node, depending on where X where
+				_root = x._right;
+			else if (x == *(x._parent->_right))
+				x._parent->_right = &y;
 			else
-				x._parent._left = y;		
+				x._parent->_left = &y;
 			
 			x._right = y._left;						// Changing X.right, to Y.left
 
-			x._right.parent = x;					// Changing X.new_right_parent to X
+			x._right->_parent = &x;					// Changing X.new_right_parent to X
 
-			y._left = x;							// Changing Y.left to X
+			y._left = &x;							// Changing Y.left to X
 
-			x._parent = y;							// Changing X.parent to Y
+			x._parent = &y;							// Changing X.parent to Y
 		}
 
 		void	right_rotate(node & x)
 		{
-			node& y = x._left;						// Y is the X->right_node
+			node& y = *x._left;						// Y is the X->right_node
 
 			y._parent = x._parent;					// Changing Y.parent by X.parent
 
-			if (x._parent == _null_node)			// Changing parent's child node, depending on where X where
-				_root = &(x._right);
-			else if (x == *(x._parent._right))
-				x._parent._right = y;
+			if (x._parent == &_null_node)			// Changing parent's child node, depending on where X where
+				_root = x._right;
+			else if (x == *(x._parent->_right))
+				x._parent->_right = &y;
 			else
-				x._parent._left = y;		
+				x._parent->_left = &y;		
 			
 			x._left = y._right;						// Changing X.left, to Y.right
 
-			x._left.parent = x;						// Changing X.new_left_parent to X
+			x._left->_parent = &x;					// Changing X.new_left_parent to X
 
-			y._right = x;							// Changing Y.right to X
+			y._right = &x;							// Changing Y.right to X
 
-			x._parent = y;							// Changing X.parent to Y
+			x._parent = &y;							// Changing X.parent to Y
 		}
 
 
 
-		node&	createNode(node & nNode) { node* ret = _allocator.allocate(1); _allocator.construct(ret, nNode); return (ret); }
+		node&	createNode(node nNode) { node* ret = _null_node._node_allocator.allocate(1); _null_node._node_allocator.construct(ret, nNode); return (*ret); }
 
 		
 		//						INSERT FIXUP
 		void	insertFixUp(node * newNode)
 		{
-			while (newNode->_parent._red == RED)
+			while (newNode->_parent->_red == RED)
 			{
 				if (newNode->_parent == newNode->_parent->_parent->_right)
 				{
-						if (newNode->_parent->parent->left.color == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
+						if (newNode->_parent->_parent->_left->_red == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
 						{
-							newNode->_parent->parent->left->changeColor();
-							newNode->parent->changeColor();
-							newNode->parent->parent->changeColor();
+							newNode->_parent->_parent->_left->changeColor();
+							newNode->_parent->changeColor();
+							newNode->_parent->_parent->changeColor();
 						}
 						else										//	PUSHING THE NODE, BY ROTATING AT GRANDPARENT 
 						{	
-							if (newNode == newNode->parent->left)			// ALLING ON THE RIGHT BRANCHING
+							if (newNode == newNode->_parent->_left)			// ALLING ON THE RIGHT BRANCHING
 							{
-								newNode = newNode->parent;
+								newNode = newNode->_parent;
 								left_rotate(*newNode);
 							}
-							newNode->parent->changeColor();
-							newNode->parent->parent->changeColor();
-							right_rotate(newNode->parent->parent);
+							newNode->_parent->changeColor();
+							newNode->_parent->_parent->changeColor();
+							right_rotate(*(newNode->_parent->_parent));
 						}
 				}
 				
@@ -220,22 +231,22 @@ namespace ft
 				// THE ALGO BELLOW IS STRICLY THE SAME, FROM AN OTHER PARENT/GP, POS'S.
 				else
 				{
-						if (newNode->_parent->parent->_right.color == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
+						if (newNode->_parent->_parent->_right->_red == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
 						{
-							newNode->_parent->parent->_right->changeColor();
-							newNode->parent->changeColor();
-							newNode->parent->parent->changeColor();
+							newNode->_parent->_parent->_right->changeColor();
+							newNode->_parent->changeColor();
+							newNode->_parent->_parent->changeColor();
 						}
 						else										//	PUSHING THE NODE, BY ROTATING AT GRANDPARENT 
 						{	
-							if (newNode == newNode->parent->_right)			// ALLING ON THE RIGHT BRANCHING
+							if (newNode == newNode->_parent->_right)			// ALLING ON THE RIGHT BRANCHING
 							{
-								newNode = newNode->parent;
+								newNode = newNode->_parent;
 								right_rotate(*newNode);
 							}
-							newNode->parent->changeColor();
-							newNode->parent->parent->changeColor();
-							left_rotate(newNode->parent->parent);
+							newNode->_parent->changeColor();
+							newNode->_parent->_parent->changeColor();
+							left_rotate(*(newNode->_parent->_parent));
 						}
 						
 				}
@@ -248,6 +259,7 @@ namespace ft
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//______________________PUBLIC_FUNCTIONS___________________//
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
+		
 		public:
 
 		map(const map& other) : _null_node(node(BLACK))
@@ -300,26 +312,28 @@ namespace ft
 		std::pair<iterator, bool> insert(const value_type& value)
 		{
 			if (search_key(value.first) != &_null_node)
-				return (
+				return	(
 					make_pair(
-						iterator(search_key(value)),
-						false
-					)
-				);
+						iterator(search_key(value.first)),
+						false)
+						);
+		
+
+
 			//						NEW NODE ALLOCAION AND INSERTION			
 			
 			node* tmp = _root;
 			while (1)
 			{
-				if (_root == &_null_node){_root == createNode(node(value, _null_node, _null_node, *tmp, RED)); break;}
+				if (_root == &_null_node){_root = &createNode(node(value, &_null_node, &_null_node, tmp, RED)); break;}
 				if (_keycomp(value.first, tmp->_value.first))
 				{
-					if (tmp->_left == &_null_node){tmp->_left = createNode(node(value, _null_node, _null_node, *tmp, RED));	break;}
+					if (tmp->_left == &_null_node){tmp->_left = &createNode(node(value, &_null_node, &_null_node, tmp, RED));	break;}
 					tmp = tmp->_left;
 				}
 				else
 				{
-					if (tmp->_right == &_null_node){tmp->_right = createNode(node(value, _null_node, _null_node, *tmp, RED));	break;}
+					if (tmp->_right == &_null_node){tmp->_right = &createNode(node(value, &_null_node, &_null_node, tmp, RED));	break;}
 					tmp = tmp->_right;
 				}
 			}
@@ -339,6 +353,7 @@ namespace ft
 			insertFixUp(tmp);
 			return (make_pair(iterator(tmp), true));
 		}
+
 		
 		//std::iterator				insert(iterator hint, const value_type& value);
 		//void						erase(iterator pos);
@@ -375,8 +390,8 @@ namespace ft
 
 		allocator_type		get_allocator() 	{ return (_allocator); 						}
 
-
 	};
+
 };
 
 #endif
