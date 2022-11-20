@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 19:34:19 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/29 19:36:04 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/20 16:55:50 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,39 @@
 #include "map.hpp"
 #include "iterator.hpp"
 
+#define RED true
+#define BLACK false
+
 namespace ft
-{
+{	
+	template<class value_type>	class node
+	{
+
+		public:
+
+		value_type				_value;
+		node*					_left;
+		node*					_right;
+		node*					_parent;
+		bool					_red;
+
+		node() : _value(), _left(NULL), _right(NULL), _parent(NULL), _red(RED) {}
+		node(bool color) : _red(color) {}
+		node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(RED) {}
+		node(value_type val, node* left, node* right, node* parent, bool color) : _value(val), _left(left), _right(right), _parent(parent), _red(color) {} 
+		node(const node& val) : _value(val._value), _left(val._left), _right(val._right), _parent(val._parent), _red(val._red) {}
+
+		~node() {}
+
+		void	changeColor() { _red = !_red; }
+			
+		bool	operator==(const node & val)	{return(val._value == this->_value &&
+													val._right == this->_right && 
+													val._left == this->_left && 
+													val._red == this->_red);	}
+
+		};
+		
 	template<class T>
 	class map_iterator : public iterator<bidirectional_iterator_tag, T>
 	{
@@ -30,7 +61,7 @@ namespace ft
 
 		private:
 			
-			node* _node_ptr;
+			pointer _node_ptr;
 
 			void			increment() 
 			{
@@ -46,8 +77,7 @@ namespace ft
 		
 			map_iterator() 								: _node_ptr(NULL) {}
 
-			explicit
-			map_iterator(node*  node_ptr) 			: _node_ptr(node_ptr) {}
+			map_iterator(node<T>*  node_ptr) 			: _node_ptr(node_ptr) {}
 
 			template<class U>
 			map_iterator(const map_iterator<U> & it)	{ _node_ptr = it.base(); }

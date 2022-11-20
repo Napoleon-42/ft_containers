@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/29 20:08:14 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/20 16:51:59 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,23 +40,31 @@ namespace ft
 		//_______________________MEMBER_TYPES______________________//
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 
+
 		public:
 
-		typedef Key									key_type;
-		typedef T									mapped_type;
-		typedef pair<const key_type, mapped_type>	value_type;
-		typedef Compare								key_compare;
-		typedef Allocator							allocator_type;
+		typedef Key										key_type;
+		typedef T										mapped_type;
+		typedef pair<const key_type, mapped_type>		value_type;
+		typedef Compare									key_compare;
+		typedef Allocator								allocator_type;
 		
-		typedef std::size_t							size_type;
-		typedef	std::ptrdiff_t						difference_type;
+		typedef std::size_t								size_type;
+		typedef	std::ptrdiff_t							difference_type;
 		
-		typedef	typename Allocator::reference		reference;
-		typedef typename Allocator::const_reference	const_reference;
-		typedef	typename Allocator::pointer			pointer;
-		typedef typename Allocator::const_pointer	const_pointer;
+		typedef	typename Allocator::reference			reference;
+		typedef typename Allocator::const_reference		const_reference;
+		typedef	typename Allocator::pointer				pointer;
+		typedef typename Allocator::const_pointer		const_pointer;
 
+		typedef	map_iterator<node<value_type> >			iterator;
+		typedef	map_iterator<const node<value_type> >	const_iterator;
 
+		/*
+		typedef										reverse_iterator;
+		typedef 									const_reverse_iterator;
+		*/
+		
 		class value_compare	{  										 // in C++98, it is required to inherit binary_function<value_type,value_type,bool>
 		  	friend class map;
 			protected:
@@ -69,77 +77,36 @@ namespace ft
 				bool operator() (const value_type& x, const value_type& y) const	{ return comp(x.first, y.first); }
 		};
 
-
-		private:
-
-		friend class map_iterator;
-		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-		//_______________________NODE_CLASS________________________//
-		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-
-		class node
-		{
-
-			public:
-
-
-			value_type				_value;
-			node*					_left;
-			node*					_right;
-			node*					_parent;
-			std::allocator<node>	_node_allocator;
-			bool					_red;
-
-			node() : _value(), _left(NULL), _right(NULL), _parent(NULL), _red(RED) {}
-			node(bool color) : _red(color) {}
-			node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent), _red(RED) {}
-			node(value_type val, node* left, node* right, node* parent, bool color) : _value(val), _left(left), _right(right), _parent(parent), _red(color) {} 
-			node(const node& val) : _value(val._value), _left(val._left), _right(val._right), _parent(val._parent), _red(val._red) {}
-
-			~node() {}
-
-			void	changeColor() { _red = !_red; }
-			
-
-			bool	operator==(const node & val)	{return(val._value == this->_value &&
-																			val._right == this->_right && 
-																			val._left == this->_left && 
-																			val._red == this->_red);	}
-
-		};
-		
-
-		public:
-
-	
-		typedef	map_iterator<node>			iterator;
-		typedef	map_iterator<const node>	const_iterator;
-
-		/*
-		typedef										reverse_iterator;
-		typedef 									const_reverse_iterator;
-		*/
-
 		private:
 
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//_______________________MAP_MEMBERS_______________________//
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 
-		node				*_root;
+		typedef	typename allocator_type:: template rebind<node<value_type> >::other node_allocator;
+
+		node<value_type>	*_root;
 		key_compare			_keycomp;
 		allocator_type		_allocator;
+		node_allocator		_node_allocator;
 		size_type			_size;
-		node				_null_node;
+		node<value_type>	_null_node;
 
 
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//______________________PRIVATE_FUNCTIONS__________________//
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 
-		node*	search_key(const Key& key) const
+		node<value_type>&	createNode(node<value_type> nNode) 
 		{
-			node* tmp_node = _root;
+			node<value_type> *ret = _node_allocator.allocate(1);
+			_node_allocator.construct(ret, nNode);
+			return (*ret);
+		}
+
+		node<value_type>*	search_key(const Key& key) const
+		{
+			node<value_type>* tmp_node = _root;
 
 			while(tmp_node->_value.first != key && tmp_node != &_null_node)
 			{
@@ -152,9 +119,9 @@ namespace ft
 			return (tmp_node);
 		}
 		
-		void	left_rotate(node & x)
+		void	left_rotate(node<value_type> & x)
 		{
-			node& y = *x._right;						// Y is the X->left_node
+			node<value_type>& y = *x._right;						// Y is the X->left_node
 
 			y._parent = x._parent;					// Changing Y.parent by X.parent
 
@@ -174,9 +141,9 @@ namespace ft
 			x._parent = &y;							// Changing X.parent to Y
 		}
 
-		void	right_rotate(node & x)
+		void	right_rotate(node<value_type> & x)
 		{
-			node& y = *x._left;						// Y is the X->right_node
+			node<value_type>& y = *x._left;						// Y is the X->right_node
 
 			y._parent = x._parent;					// Changing Y.parent by X.parent
 
@@ -197,12 +164,8 @@ namespace ft
 		}
 
 
-
-		node&	createNode(node nNode) { node* ret = _null_node._node_allocator.allocate(1); _null_node._node_allocator.construct(ret, nNode); return (*ret); }
-
-		
 		//						INSERT FIXUP
-		void	insertFixUp(node * newNode)
+		void	insertFixUp(node<value_type> * newNode)
 		{
 			while (newNode->_parent->_red == RED)
 			{
@@ -262,13 +225,14 @@ namespace ft
 		
 		public:
 
-		map(const map& other) : _null_node(node(BLACK))
+		map(const map& other)
 		{
+			_node_allocator = other._node_allocator();
+			_allocator = other.get_allocator();
+			_null_node = createNode(node<value_type>(BLACK));
 			_root = &_null_node;
 			_keycomp = other.key_comp();
 			_size = other.size();
-			_null_node = node();
-			_allocator = other.get_allocator();
 			//insert(other.begin(), other.first());
 			(void) other;
 		}
@@ -276,8 +240,9 @@ namespace ft
 		explicit map(const key_compare& comp = key_compare(), const Allocator& alloc = allocator_type()) :
 		_keycomp(comp),
 		_allocator(alloc),
+		_node_allocator(node_allocator()),
 		_size(0),
-		_null_node(node(BLACK)) 
+		_null_node(createNode(node<value_type>()))
 		{
 			_root = &_null_node;
 		}
@@ -317,23 +282,21 @@ namespace ft
 						iterator(search_key(value.first)),
 						false)
 						);
-		
-
 
 			//						NEW NODE ALLOCAION AND INSERTION			
 			
-			node* tmp = _root;
+			node<value_type>* tmp = _root;
 			while (1)
 			{
-				if (_root == &_null_node){_root = &createNode(node(value, &_null_node, &_null_node, tmp, RED)); break;}
+				if (_root == &_null_node){_root = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED)); break;}
 				if (_keycomp(value.first, tmp->_value.first))
 				{
-					if (tmp->_left == &_null_node){tmp->_left = &createNode(node(value, &_null_node, &_null_node, tmp, RED));	break;}
+					if (tmp->_left == &_null_node){tmp->_left = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED));	break;}
 					tmp = tmp->_left;
 				}
 				else
 				{
-					if (tmp->_right == &_null_node){tmp->_right = &createNode(node(value, &_null_node, &_null_node, tmp, RED));	break;}
+					if (tmp->_right == &_null_node){tmp->_right = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED));	break;}
 					tmp = tmp->_right;
 				}
 			}

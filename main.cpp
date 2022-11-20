@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/10/09 01:09:16 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/20 17:00:04 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,10 +208,12 @@ int main()
 		std::cout << ft_map.count(1) << std::endl;
 		std::cout << std::endl;
 
-		for (int i = 0; i < 42 ; i++)
+		int i = 0;
+		while (i < 42)
 		{
 			std_map.insert(std::make_pair(i, "String."));
-			ft_map.insert(ft::make_pair(i, "String.")); 
+			ft_map.insert(ft::make_pair(i, "String."));
+			i++;
 		}
 	}
 
