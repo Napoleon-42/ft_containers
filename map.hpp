@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/20 16:51:59 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/20 17:51:45 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,11 +274,11 @@ namespace ft
 
 		//void						clear();
 
-		std::pair<iterator, bool> insert(const value_type& value)
+		ft::pair<iterator, bool> insert(const value_type& value)
 		{
 			if (search_key(value.first) != &_null_node)
 				return	(
-					make_pair(
+					ft::make_pair(
 						iterator(search_key(value.first)),
 						false)
 						);
@@ -288,7 +288,7 @@ namespace ft
 			node<value_type>* tmp = _root;
 			while (1)
 			{
-				if (_root == &_null_node){_root = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED)); break;}
+				if (_root == &_null_node) {_root = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED)); break;}
 				if (_keycomp(value.first, tmp->_value.first))
 				{
 					if (tmp->_left == &_null_node){tmp->_left = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED));	break;}
@@ -314,7 +314,7 @@ namespace ft
 			
 
 			insertFixUp(tmp);
-			return (make_pair(iterator(tmp), true));
+			return (ft::make_pair(iterator(tmp), true));
 		}
 
 		
@@ -333,8 +333,8 @@ namespace ft
 		//iterator									find(const Key& key) const;
 		//const_iterator							find(const Key& key) const;
 
-		//std::pair<iterator, iterator> 			equal_range(const Key& key) const;
-		//std::pair<const_iterator, const_iteratro> equal_range(const Key& key) const;
+		//ft::pair<iterator, iterator> 			equal_range(const Key& key) const;
+		//ft::pair<const_iterator, const_iteratro> equal_range(const Key& key) const;
 		
 		//iterator									lower_bound(const Key& key) const;
 		//const_iterator							lower_bound(const Key& key) const;

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pair.hpp                                        :+:      :+:    :+:   */
+/*   pair.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/31 23:05:32 by lnelson           #+#    #+#             */
-/*   Updated: 2022/09/05 18:49:06 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/20 17:51:03 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,12 @@ struct pair
 	first_type	first;
 	second_type	second;
 
-	pair() : first(), second() {};
+	pair() : first(first_type()), second(second_type()) {};
 
 	template <class T, class U>
-	pair(const pair<T,U>& pr)
-	{
-		first = pr.first;
-		second = pr.second;
-	}
+	pair(const pair<T,U>& pr) : first(pr.first), second(pr.second) {};
 
-	pair(const first_type& v1, const second_type& v2)
-	{
-		first = v1;
-		second = v2;
-	}
+	pair(const first_type& v1, const second_type& v2) : first(v1), second(v2) {} ;
 
 	~pair() {};
 
@@ -50,6 +42,7 @@ struct pair
 	{
 		first = pr.first;
 		second = pr.second;
+		return (*this);
 	}
 
 };

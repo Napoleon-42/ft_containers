@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 19:34:19 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/20 16:55:50 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/20 17:35:07 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ namespace ft
 		
 			map_iterator() 								: _node_ptr(NULL) {}
 
-			map_iterator(node<T>*  node_ptr) 			: _node_ptr(node_ptr) {}
+			map_iterator(pointer  node_ptr) 			: _node_ptr(node_ptr) {}
 
 			template<class U>
 			map_iterator(const map_iterator<U> & it)	{ _node_ptr = it.base(); }
