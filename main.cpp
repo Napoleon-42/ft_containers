@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/20 17:00:04 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/25 00:11:28 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,19 +200,15 @@ int main()
 		std::map<int, std::string> std_map;
 		ft::map<int, std::string> ft_map;
 
-		std::cout << std_map.size() << std::endl;
-		std::cout << ft_map.size() << std::endl;
-		std::cout << std::endl;
-
-		std::cout << std_map.count(1) << std::endl;
-		std::cout << ft_map.count(1) << std::endl;
-		std::cout << std::endl;
+		std::cout << "start sizes: ST: " << std_map.size() << " | FT: " << ft_map.size() << std::endl << std::endl;
 
 		int i = 0;
 		while (i < 42)
 		{
 			std_map.insert(std::make_pair(i, "String."));
+			std::cout << "ST:" << std_map.size() << std::endl;
 			ft_map.insert(ft::make_pair(i, "String."));
+			std::cout << "FT:" << ft_map.size() << std::endl << std::endl;
 			i++;
 		}
 	}

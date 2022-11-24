@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/20 17:51:45 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/25 00:11:03 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,12 +85,12 @@ namespace ft
 
 		typedef	typename allocator_type:: template rebind<node<value_type> >::other node_allocator;
 
-		node<value_type>	*_root;
+		node<value_type>	_null_node;
 		key_compare			_keycomp;
 		allocator_type		_allocator;
 		node_allocator		_node_allocator;
 		size_type			_size;
-		node<value_type>	_null_node;
+		node<value_type>	*_root;
 
 
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
@@ -225,28 +225,26 @@ namespace ft
 		
 		public:
 
-		map(const map& other)
+		map(const map& other):
+		_null_node(createNode(node<value_type>(BLACK))),
+		_keycomp(other.get_key()),
+		_allocator(other.get_allocator()),
+		_node_allocator(other._node_allocator),
+		_size(0),
+		_root(&_null_node)
 		{
-			_node_allocator = other._node_allocator();
-			_allocator = other.get_allocator();
-			_null_node = createNode(node<value_type>(BLACK));
-			_root = &_null_node;
-			_keycomp = other.key_comp();
-			_size = other.size();
-			//insert(other.begin(), other.first());
-			(void) other;
-		}
+			// insert(other.begin(), other.last());
+		};
+		
 
 		explicit map(const key_compare& comp = key_compare(), const Allocator& alloc = allocator_type()) :
+		_null_node(createNode(node<value_type>(BLACK))),
 		_keycomp(comp),
 		_allocator(alloc),
 		_node_allocator(node_allocator()),
 		_size(0),
-		_null_node(createNode(node<value_type>()))
-		{
-			_root = &_null_node;
-		}
-
+		_root(&_null_node)
+		{};
 /*		
 		template<class InputIt>
 		map(InputIt first, InputIt last, const Allocator& alloc = Allocator()) : _allocator(alloc)
@@ -286,20 +284,34 @@ namespace ft
 			//						NEW NODE ALLOCAION AND INSERTION			
 			
 			node<value_type>* tmp = _root;
-			while (1)
-			{
-				if (_root == &_null_node) {_root = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED)); break;}
-				if (_keycomp(value.first, tmp->_value.first))
+			if (_root == &_null_node) 
+				{_root = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED)); tmp = _root;}
+			else		
+				while (1)
 				{
-					if (tmp->_left == &_null_node){tmp->_left = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED));	break;}
-					tmp = tmp->_left;
+					if (_keycomp(value.first, tmp->_value.first))
+					{
+						if (tmp->_left != &_null_node)
+							tmp = tmp->_left;
+						else
+						{
+							tmp->_left = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED));
+							tmp = tmp->_left;
+							break;
+						}
+					}
+					else
+					{
+						if (tmp->_right != &_null_node)
+							tmp = tmp->_right;
+						else
+						{
+							tmp->_right = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED));
+							tmp = tmp->_right;
+							break;
+						}
+					}
 				}
-				else
-				{
-					if (tmp->_right == &_null_node){tmp->_right = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED));	break;}
-					tmp = tmp->_right;
-				}
-			}
 			_size++;
 			//
 			//	create a node with 'createNode' left|right|_root possisions.
