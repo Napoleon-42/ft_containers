@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/25 00:11:28 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/25 01:27:21 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,14 +202,39 @@ int main()
 
 		std::cout << "start sizes: ST: " << std_map.size() << " | FT: " << ft_map.size() << std::endl << std::endl;
 
-		int i = 0;
-		while (i < 42)
+		int i = -3;
+		while (i < 13)
 		{
 			std_map.insert(std::make_pair(i, "String."));
 			std::cout << "ST:" << std_map.size() << std::endl;
+			
 			ft_map.insert(ft::make_pair(i, "String."));
-			std::cout << "FT:" << ft_map.size() << std::endl << std::endl;
+			std::cout << "FT:" << ft_map.size() << std::endl;
+			
+			std::cout << "STATE:\tbegin\tend | i = "  << i << "\nstd:\t" << std_map.begin()->first << "\t" << std_map.end()->first;
+			std::cout << "\n ft:\t" << ft_map.begin()->first << "\t" << ft_map.end()->first << std::endl;
+
+			std::cout << std::endl;
+
 			i++;
+		}
+
+		{
+			std::cout << "begin() comparaison after insert : ";
+			if (std_map.begin()->first == ft_map.begin()->first)
+				std::cout << "OK" << std::endl;
+			else
+				std::cout << "KO" << std::endl;
+			std::cout << std::endl;
+		}
+		
+		{
+			std::cout << "end() comparaison after insert : ";
+			if (std_map.end()->first == ft_map.end()->first)
+				std::cout << "OK" << std::endl;
+			else
+				std::cout << "KO" << " - std_map.end() == " << std_map.end()->first << " - ft == " << ft_map.end()->first << std::endl;
+			std::cout << std::endl;
 		}
 	}
 

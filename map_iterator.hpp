@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 19:34:19 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/20 17:35:07 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/25 01:06:18 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,12 @@
 
 namespace ft
 {	
-	template<class value_type>	class node
+	template<class T>	class node
 	{
 
 		public:
+
+		typedef	T				value_type;
 
 		value_type				_value;
 		node*					_left;
@@ -91,8 +93,8 @@ namespace ft
 			template<class U>
 			map_iterator<T>	operator= (const map_iterator<U> & it) { _node_ptr = it.base(); return (*this); }
 
-			reference		operator*() const		{ return (_node_ptr->_value); 		}
-			pointer			operator->() const		{ return (&(_node_ptr->_value));	}
+			typename value_type::value_type		operator*() const		{ return (_node_ptr->_value); 		}
+			typename value_type::value_type*		operator->() const		{ return (&(_node_ptr->_value));	}
 
 			map_iterator<T>&	operator++()		{ increment(); return (*this);	}
 			map_iterator<T>&	operator--()		{ decrement(); return (*this);	}

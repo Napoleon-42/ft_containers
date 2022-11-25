@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/25 00:11:03 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/25 01:33:01 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ namespace ft
 			return (tmp_node);
 		}
 		
-		void	left_rotate(node<value_type> & x)
+		void	right_rotate(node<value_type> & x)
 		{
 			node<value_type>& y = *x._right;						// Y is the X->left_node
 
@@ -141,7 +141,7 @@ namespace ft
 			x._parent = &y;							// Changing X.parent to Y
 		}
 
-		void	right_rotate(node<value_type> & x)
+		void	left_rotate(node<value_type> & x)
 		{
 			node<value_type>& y = *x._left;						// Y is the X->right_node
 
@@ -252,6 +252,18 @@ namespace ft
 		}
 */
 
+		//	ITERATORS
+
+		iterator				begin() 		{ node<value_type>* tmp = _root; while (tmp->_left != &_null_node) {tmp = tmp->_left;} return (iterator(tmp)); }
+		const_iterator			begin() const	{ node<value_type>* tmp = _root; while (tmp->_left != &_null_node) {tmp = tmp->_left;} return (iterator(tmp)); }
+		//reverse_iterator		rbegin() { return (); }
+		//const_reverse_iterator	rbegin() const { return (); } 
+		
+		iterator				end() 		{ node<value_type>* tmp = _root; while (tmp != &_null_node) {tmp = tmp->_right;} return (iterator(tmp)); }
+		const_iterator			end() const	{ node<value_type>* tmp = _root; while (tmp != &_null_node) {tmp = tmp->_right;} return (iterator(tmp)); }
+		//reverse_iterator		rend() { return (); }
+		//const_reverse_iterator	rend() const { return (); }	
+
 		// ELEMENT ACCESS		- A REFAIRE
 
 		//mapped_type&		at(const Key& key)			{ return (search_key(key)->value.second); }
@@ -326,6 +338,7 @@ namespace ft
 			
 
 			insertFixUp(tmp);
+			_null_node._value.first = size();
 			return (ft::make_pair(iterator(tmp), true));
 		}
 
@@ -338,7 +351,7 @@ namespace ft
 
 
 
-		//	LOOKUP
+		//	OPERATIONS
  
 		size_type									count(const Key& key) const	{ return (search_key(key) == &_null_node ? 0 : 1); }
 
