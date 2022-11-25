@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 15:27:56 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/25 01:27:21 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/11/25 13:47:10 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,8 +211,8 @@ int main()
 			ft_map.insert(ft::make_pair(i, "String."));
 			std::cout << "FT:" << ft_map.size() << std::endl;
 			
-			std::cout << "STATE:\tbegin\tend | i = "  << i << "\nstd:\t" << std_map.begin()->first << "\t" << std_map.end()->first;
-			std::cout << "\n ft:\t" << ft_map.begin()->first << "\t" << ft_map.end()->first << std::endl;
+			//std::cout << "STATE:\tbegin\tend | i = "  << i << "\nstd:\t" << std_map.begin()->first << "\t" << std_map.end()->first;
+			//std::cout << "\n ft:\t" << ft_map.begin()->first << "\t" << ft_map.end()->first << std::endl;
 
 			std::cout << std::endl;
 
@@ -235,6 +235,18 @@ int main()
 			else
 				std::cout << "KO" << " - std_map.end() == " << std_map.end()->first << " - ft == " << ft_map.end()->first << std::endl;
 			std::cout << std::endl;
+		}
+
+		{
+			std::cout << "TESTING iterator increment:\n\tFT(" << ft_map.size() << "):\tSTD(" << std_map.size() << "):" << std::endl;
+			std::map<int, std::string>::iterator stdit = std_map.begin();
+			ft::map<int, std::string>::iterator fit = ft_map.begin();
+			while (stdit != std_map.end() && fit != ft_map.end())
+			{
+				std::cout << "\t" << fit->first << "\t" << stdit->first << std::endl;
+				stdit++;
+				fit++;
+			}
 		}
 	}
 
