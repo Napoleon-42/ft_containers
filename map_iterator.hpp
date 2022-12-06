@@ -50,40 +50,40 @@ namespace ft
 
 		void			increment() 
 		{
-			if (_node_ptr->_right)
+			if (_node->_right)
 			{
-				_node_ptr = _node_ptr->_right;
-				while (_node_ptr->_left)
-					_node_ptr = _node_ptr->_left;
+				_node = _node->_right;
+				while (_node->_left)
+					_node = _node->_left;
 			}
 		 	else
 			{
-				pointer tmp = _node_ptr;
-				_node_ptr = _node_ptr->_parent;
-				while (_node_ptr->_left != tmp)
+				pointer tmp = _node;
+				_node = _node->_parent;
+				while (_node->_left != tmp)
 				{
-					tmp = _node_ptr;
-					_node_ptr = _node_ptr->_parent;
+					tmp = _node;
+					_node = _node->_parent;
 				}
 			}
 		}
 
 		void			decrement() 
 		{
-			if (_node_ptr->_left)
+			if (_node->_left)
 			{
-				_node_ptr = _node_ptr->_left;
-				while (_node_ptr->_right)
-					_node_ptr = _node_ptr->_right;
+				_node = _node->_left;
+				while (_node->_right)
+					_node = _node->_right;
 			}
 			else
 			{
-				pointer tmp = _node_ptr;
-				_node_ptr = _node_ptr->_parent;
-				while (_node_ptr->_right != tmp)
+				pointer tmp = _node;
+				_node = _node->_parent;
+				while (_node->_right != tmp)
 				{
-					tmp = _node_ptr;
-					_node_ptr = _node_ptr->_parent;
+					tmp = _node;
+					_node = _node->_parent;
 				}
 			}
 		}
@@ -100,7 +100,7 @@ namespace ft
 		pointer base() const {return (_node); }
 
 		value_type	operator*() const	{ return (_node->value);	}
-		value_type*	operator->() const	{ return (&(_node->value);)	}
+		value_type*	operator->() const	{ return (&(_node->value));	}
 
 		map_iterator&	operator++()		{ increment(); return (*this);	}
 		map_iterator&	operator--()		{ decrement(); return (*this);	}

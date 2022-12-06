@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 13:58:21 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/25 15:18:56 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/12/06 16:33:39 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,10 @@
 #include <utility>
 #include <stdexcept>
 #include <exception>
+#include <iostream>
 #include "pair.hpp"
 #include "map_iterator.hpp"
-#include <iostream>
+#include "red_black_tree.hpp"
 
 namespace ft
 {
@@ -78,17 +79,17 @@ namespace ft
         
 		protected:
 
-		//typedef	red_black_tree<value_type, key_compare, allocator_type>			_tree_type;
+		typedef	red_black_tree<value_type, key_compare, allocator_type>	_tree_type;
 
 		public:
 
-		/*
+		
 		typedef	map_iterator<_tree_type::node_type, value_type>			iterator;
 		typedef	map_iterator<const _tree_type::node_type, value_type>	const_iterator;
 		
-		typedef	//////////<_tree_type::node_type, value_type>	reverse_iterator;
-		typedef //////////<_tree_type::node_type, value_type>	const_reverse_iterator;
-		*/
+		typedef	<_tree_type::node_type, value_type>	reverse_iterator;
+		typedef <_tree_type::node_type, value_type>	const_reverse_iterator;
+		
 		
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//_______________________MAP_MEMBERS_______________________//
@@ -96,7 +97,7 @@ namespace ft
 
         protected:
 
-        //red_black_tree    _internal_tree;
+        _treee_type	_internal_tree;
         
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//______________________PUBLIC_FUNCTIONS___________________//
@@ -106,21 +107,21 @@ namespace ft
         
 		//	ITERATORS
 
-		//iterator				begin() 		{ return (_internal_tree.begin());	}
+		//iterator					begin() 		{ return (_internal_tree.begin());	}
 		//const_iterator			begin() const	{ return (_internal_tree.begin());	}
-		//reverse_iterator		rbegin() 		{ return (_internal_tree.rbegin());	}
+		//reverse_iterator			rbegin() 		{ return (_internal_tree.rbegin());	}
 		//const_reverse_iterator	rbegin() const	{ return (_internal_tree.rbegin());	}
 		
-		//iterator				end() 			{ return (_internal_tree.end());	}
+		//iterator					end() 			{ return (_internal_tree.end());	}
 		//const_iterator			end() const		{ return (_internal_tree.end());	}
-		//reverse_iterator		rend() 			{ return (_internal_tree.rend());	}
+		//reverse_iterator			rend()			{ return (_internal_tree.rend());	}
 		//const_reverse_iterator	rend() const	{ return (_internal_tree.rend());	}	
 
 		// ELEMENT ACCESS
 
-		//mapped_type&			at(const Key& key)			{ return (search_key(key)->value.second); }
-		//const mapped_type&	at(const Key& key) const	{ return (search_key(key)->value.second); }
-		//mapped_type&			operator[](const Key& key)	{ return (search_key(key)->value.second); }
+		//mapped_type&			at(const Key& key)			{ return (_internal_tree.at(key)); }
+		//const mapped_type&	at(const Key& key) const	{ return (_internal_tree.at(key)); }
+		//mapped_type&			operator[](const Key& key)	{ return (_internal_tree[]); }
 
 
 
@@ -135,7 +136,7 @@ namespace ft
 		//	MODIFIERS
 
 		//void						clear();
-		//ft::pair<iterator, bool> insert(const value_type& value);
+		ft::pair<iterator, bool> 	insert(const value_type& value) { return (_internal_tree.insert(value)); }
 		//std::iterator				insert(iterator hint, const value_type& value);
 		//void						erase(iterator pos);
 		//void						erase(iterator first, iterator last);
@@ -157,8 +158,8 @@ namespace ft
 		//iterator									find(const Key& key) const;
 		//const_iterator							find(const Key& key) const;
 
-		//ft::pair<iterator, iterator> 			equal_range(const Key& key) const;
-		//ft::pair<const_iterator, const_iteratro> equal_range(const Key& key) const;
+		//ft::pair<iterator, iterator> 				equal_range(const Key& key) const;
+		//ft::pair<const_iterator, const_iteratro> 	equal_range(const Key& key) const;
 		
 		//iterator									lower_bound(const Key& key) const;
 		//const_iterator							lower_bound(const Key& key) const;
@@ -169,63 +170,14 @@ namespace ft
 		//	OBSERVERS
 
 		key_compare			key_comp() const 	{ return (_internal_tree.key_comp());		}
-		map::value_compare	value_comp() const 	{ return (_internal_tree.value_comp());		}
+		map::value_compare	value_comp() const 	{ return (value_compare(key_compare()));	}
 
 		//	ALLOCATOR
 
-		allocator_type		get_allocator() 	{ return (_internal_tree.get_allocator());	}
+		allocator_type		get_allocator() 	{ return (allocator_type());	}
     };
 
 
-	//////////////////// /////////////////////////////////////
-	//////////////////    ////////////////////////////////////
-	//														//
-	//					NODE CLASS DEFINITION				//
-	//														//
-	//	Node class is a base class for all other nodes, 	//
-	//	needed to implement different data structure types  //
-	//														//
-	//////////////////////////////////////////    ////////////
-	/////////////////////////////////////////// //////////////
-	
-	template<class T>	class node
-	{
-		public:
-		
-		typedef T	value_type;
-
-		protected:
-
-		value_type	_value;
-		node*		_left;
-		node*		_right;
-		node*		_parent;
-
-		public:
-
-		node() : _value(), _left(NULL), _right(NULL), _parent(NULL) {}
-		node(value_type val, node* left, node* right, node* parent) : _value(val), _left(left), _right(right), _parent(parent) {}
-		node(const node& other) : _value(other._value), _left(other._left), _right(other._right) {}
-		
-		~node() {}
-
-		node&	operator=(const node& other)
-		{
-			_value = other._value;
-			_left = other._left;
-			_right = other._right;
-			_parent = other._parent;
-		}
-		
-		bool	operator==(const node & other)
-		{
-			return(other._value == this->_value &&
-			other._right == this->_right && 
-			other._left == this->_left);
-		}
-
-		bool	operator!=(const node & other) { return (!(*this == other)); }
-	}
 };
 
 

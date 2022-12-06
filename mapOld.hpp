@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 20:01:04 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/25 14:03:24 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/12/06 16:05:41 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,134 +91,6 @@ namespace ft
 		node<value_type>	_null_node;
 		size_type			_size;
 		node<value_type>	*_root;
-
-
-		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-		//______________________PRIVATE_FUNCTIONS__________________//
-		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
-
-		node<value_type>&	createNode(node<value_type> nNode) 
-		{
-			node<value_type> *ret = _node_allocator.allocate(1);
-			_node_allocator.construct(ret, nNode);
-			return (*ret);
-		}
-
-		node<value_type>*	search_key(const Key& key) const
-		{
-			node<value_type>* tmp_node = _root;
-
-			while(tmp_node->_value.first != key && tmp_node != &_null_node)
-			{
-				if (_keycomp(key, tmp_node->_value.first))
-					tmp_node = tmp_node->_left;
-				else
-					tmp_node = tmp_node->_right;
-			}
-			
-			return (tmp_node);
-		}
-		
-		void	right_rotate(node<value_type> & x)
-		{
-			node<value_type>& y = *x._right;						// Y is the X->left_node
-
-			y._parent = x._parent;					// Changing Y.parent by X.parent
-
-			if (x._parent == &_null_node)			// Changing parent's child node, depending on where X where
-				_root = x._right;
-			else if (x == *(x._parent->_right))
-				x._parent->_right = &y;
-			else
-				x._parent->_left = &y;
-			
-			x._right = y._left;						// Changing X.right, to Y.left
-
-			x._right->_parent = &x;					// Changing X.new_right_parent to X
-
-			y._left = &x;							// Changing Y.left to X
-
-			x._parent = &y;							// Changing X.parent to Y
-		}
-
-		void	left_rotate(node<value_type> & x)
-		{
-			node<value_type>& y = *x._left;						// Y is the X->right_node
-
-			y._parent = x._parent;					// Changing Y.parent by X.parent
-
-			if (x._parent == &_null_node)			// Changing parent's child node, depending on where X where
-				_root = x._right;
-			else if (x == *(x._parent->_right))
-				x._parent->_right = &y;
-			else
-				x._parent->_left = &y;		
-			
-			x._left = y._right;						// Changing X.left, to Y.right
-
-			x._left->_parent = &x;					// Changing X.new_left_parent to X
-
-			y._right = &x;							// Changing Y.right to X
-
-			x._parent = &y;							// Changing X.parent to Y
-		}
-
-
-		//						INSERT FIXUP
-		void	insertFixUp(node<value_type> * newNode)
-		{
-			if (_root == newNode)
-				{ _root->changeColor(); return ; }
-			while (newNode->_parent->_red == RED)
-			{
-				if (newNode->_parent == newNode->_parent->_parent->_right)
-				{
-						if (newNode->_parent->_parent->_left->_red == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
-						{
-							newNode->_parent->_parent->_left->changeColor();
-							newNode->_parent->changeColor();
-							newNode->_parent->_parent->changeColor();
-						}
-						else										//	PUSHING THE NODE, BY ROTATING AT GRANDPARENT 
-						{	
-							if (newNode == newNode->_parent->_left)			// ALLING ON THE RIGHT BRANCHING
-							{
-								newNode = newNode->_parent;
-								left_rotate(*newNode);
-							}
-							newNode->_parent->changeColor();
-							newNode->_parent->_parent->changeColor();
-							right_rotate(*(newNode->_parent->_parent));
-						}
-				}
-				
-				
-				// THE ALGO BELLOW IS STRICLY THE SAME, FROM AN OTHER PARENT/GP, POS'S.
-				else
-				{
-						if (newNode->_parent->_parent->_right->_red == RED) // CHANGING THE UNCLE AND PARENT TO BLACK, GP AND NEW TO RED
-						{
-							newNode->_parent->_parent->_right->changeColor();
-							newNode->_parent->changeColor();
-							newNode->_parent->_parent->changeColor();
-						}
-						else										//	PUSHING THE NODE, BY ROTATING AT GRANDPARENT 
-						{	
-							if (newNode == newNode->_parent->_right)			// ALLING ON THE RIGHT BRANCHING
-							{
-								newNode = newNode->_parent;
-								right_rotate(*newNode);
-							}
-							newNode->_parent->changeColor();
-							newNode->_parent->_parent->changeColor();
-							left_rotate(*(newNode->_parent->_parent));
-						}
-						
-				}
-			}
-			if (_root == newNode)									// SETTING ROOT TO BLACK
-				_root->changeColor();
-		}
 
 
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//

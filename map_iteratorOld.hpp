@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/29 19:34:19 by lnelson           #+#    #+#             */
-/*   Updated: 2022/11/25 14:55:51 by lnelson          ###   ########.fr       */
+/*   Updated: 2022/12/06 15:33:19 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,5 +156,6 @@ namespace ft
 	template <class T>
 	map_iterator<T>		operator-(typename map_iterator<T>::difference_type n, map_iterator<T> it) { for(unsigned int i = 0; i < n ; i++) it--; return (it); }
 
+};
 
 #endif
