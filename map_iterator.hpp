@@ -24,20 +24,21 @@
 //			MAP_ITERATOR CLASS DEFINITION				//
 //														//
 //	map_iterator take as template the underlying node, 	//
-//	and the value type, no need to change this class to //
-//	work with other types of underlying trees for map 	//
+//	and the value type, *no need to change this class   //
+//	to work with other types of underlying trees 		//
+//	for map* 											//
 //														//
 //////////////////////////////////////////    ////////////
 /////////////////////////////////////////// //////////////
 
 namespace ft
 {
-	template<class Node, class T>
+	template<class Node>
 	class map_iterator : public iterator<bidirectional_iterator_tag, Node>
 	{
 		public:
 	
-		typedef T																				value_type;
+		typedef typename Node::value_type																				value_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::value_type			node_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::iterator_category  iterator_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, Node>::difference_type	difference_type;
@@ -99,8 +100,8 @@ namespace ft
 
 		pointer base() const {return (_node); }
 
-		value_type	operator*() const	{ return (_node->value);	}
-		value_type*	operator->() const	{ return (&(_node->value));	}
+		value_type	operator*() const	{ return (_node->_value);	}
+		value_type*	operator->() const	{ return (&(_node->_value));	}
 
 		map_iterator&	operator++()		{ increment(); return (*this);	}
 		map_iterator&	operator--()		{ decrement(); return (*this);	}
@@ -108,11 +109,11 @@ namespace ft
 		map_iterator	operator--(int)		{ map_iterator tmp = *this; decrement(); return tmp;	}
 	};
 	
-	template <class Node, class T>
-	bool	operator==(const map_iterator<Node, T> & lit, const map_iterator<Node, T> & rit)	{ return (lit.base() == rit.base()); }
+	template <class Node>
+	bool	operator==(const map_iterator<Node> & lit, const map_iterator<Node> & rit)	{ return (lit.base() == rit.base()); }
 
-	template <class Node, class T>
-	bool	operator!=(const map_iterator<Node, T> & lit, const map_iterator<Node, T> & rit)	{ return (!(lit == rit)); }
+	template <class Node>
+	bool	operator!=(const map_iterator<Node> & lit, const map_iterator<Node> & rit)	{ return (!(lit == rit)); }
 
 };
 

@@ -6,13 +6,34 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 15:07:11 by lnelson           #+#    #+#             */
-/*   Updated: 2022/12/06 16:34:47 by lnelson          ###   ########.fr       */
+/*   Updated: 2023/01/10 19:12:40 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RED_BLACK_TREE_HPP
 # define RED_BLACK_TREE_HPP
+/*
+'ft::pair<
+			ft::map_iterator<
+							ft::node<
+									ft::pair<
+											const int, std::basic_string<char>
+											> 
+									>
+							, ft::pair<
+										const int, std::basic_string<char>
+										>
+							>
+			, bool
+			>
+			::first_type '
 
+ 'map_iterator<node<ft::pair<const int, std::basic_string<char> > > >'
+ 'map_iterator<node<ft::pair<const int, std::basic_string<char> > > >'
+
+*/
+#define RED true
+#define BALCK false
 #include "map.hpp"
 #include "map_iterator.hpp"
 
@@ -49,6 +70,7 @@ namespace ft
 		~node() {}
 
 		void	changeColor() { _red = !_red; }
+		void	changeColor(bool new_color) { _red = new_color; }
 
 		bool	operator==(const node & val)	{return(val._value == this->_value &&
 													val._right == this->_right && 
@@ -56,7 +78,7 @@ namespace ft
 													val._red == this->_red);}
 		node&	operator=(const node& Nnode)
 		{
-			//_value = Nnode._value;
+			_value = Nnode._value;
 			_left = Nnode._left;
 			_right = Nnode._right;
 			_parent = Nnode._parent;
@@ -78,7 +100,7 @@ namespace ft
 	/////////////////////////////////////////// //////////////
 
 template<
-		class value_type, // by value_type, i mean the ft::pair<key_type, mapped_type> provided by the using map
+		class value_type, // value_type mean's the ft::pair<key_type, mapped_type> provided by the map
 		class key_compare,
 		class allocator_type
 		> class red_black_tree
@@ -91,11 +113,13 @@ template<
 
 		typedef typename value_type::second_type								mapped_type;
 		typedef typename value_type::first_type									key_type;
-		typedef typename node<value_type> 										node_type;
+		typedef node<value_type> 												node_type;
+		typedef std::size_t														size_type;
+		
 		typedef typename allocator_type:: template rebind<node_type>::other		node_allocator;
 		
-		typedef	map_iterator<node_type>											iterator;
-		typedef map_iterator<const node_type>									const_iterator;
+		typedef	map_iterator<node_type>							iterator;
+		typedef map_iterator<const node_type>						const_iterator;
 
 		/*
 			reverser iterators to be added...
@@ -131,12 +155,7 @@ template<
 		{
 			//insert(other.begin(), other.last());
 		}		
-		
-		red_black_tree()
-		{
-			//clear();
-		}
-		
+				
 		red_black_tree<value_type, key_compare, allocator_type> operator=(red_black_tree<value_type, key_compare, allocator_type>  const & other)
 		{
 			//clear();
@@ -167,7 +186,7 @@ template<
 
 			while(tmp_node->_value.first != key && tmp_node != &_null_node)
 			{
-				if (_keycomp(key, tmp_node->_value.first))
+				if (_key_comp(key, tmp_node->_value.first))
 					tmp_node = tmp_node->_left;
 				else
 					tmp_node = tmp_node->_right;
@@ -224,7 +243,7 @@ template<
 		//						INSERT FIXUP
 		void	insertFixUp(node_type * newNode)
 		{
-			if (_root == newNode)
+			if (_root == newNode   )
 				{ _root->changeColor(); return ; }
 			while (newNode->_parent->_red == RED)
 			{
@@ -286,13 +305,15 @@ template<
 		
 		//	ITERATORS
 
-		//iterator					begin() 		{ return (_internal_tree.begin());	}
-		//const_iterator			begin() const	{ return (_internal_tree.begin());	}
+		iterator					begin() 		{ node<value_type>* tmp = _root; while (tmp->_left != &_null_node) {tmp = tmp->_left;} return (iterator(tmp));}
+		const_iterator				begin() const	{ node<value_type>* tmp = _root; while (tmp->_left != &_null_node) {tmp = tmp->_left;} return (iterator(tmp));}
+		
 		//reverse_iterator			rbegin() 		{ return (_internal_tree.rbegin());	}
 		//const_reverse_iterator	rbegin() const	{ return (_internal_tree.rbegin());	}
 		
-		//iterator					end() 			{ return (_internal_tree.end());	}
-		//const_iterator			end() const		{ return (_internal_tree.end());	}
+		iterator					end() 			{ node<value_type>* tmp = _root; while (tmp != &_null_node) {tmp = tmp->_right;} return (iterator(tmp)); }
+		const_iterator				end() const		{ node<value_type>* tmp = _root; while (tmp != &_null_node) {tmp = tmp->_right;} return (iterator(tmp)); }
+		
 		//reverse_iterator			rend()			{ return (_internal_tree.rend());	}
 		//const_reverse_iterator	rend() const	{ return (_internal_tree.rend());	}
 
@@ -307,7 +328,7 @@ template<
 
 		bool		empty() const				{ return (_size == 0); 				}
 		size_type	size() const				{ return (_size); 					}
-		size_type	max_size() const			{ return (_allocator.max_size());	}
+		size_type	max_size() const			{ return (_node_allocator.max_size());	}
 
 
 
@@ -328,11 +349,11 @@ template<
 			
 			node<value_type>* tmp = _root;
 			if (_root == &_null_node) 
-				{_root = &createNode(node<value_type>(value, &_null_node, &_null_node, tmp, RED)); tmp = _root;}
+				{_root = &createNode(node<value_type>(value, &_null_node, &_null_node, &_null_node, RED)); tmp = _root;}
 			else		
 				while (1)
 				{
-					if (_keycomp(value.first, tmp->_value.first))
+					if (_key_comp(value.first, tmp->_value.first))
 					{
 						if (tmp->_left != &_null_node)
 							tmp = tmp->_left;
@@ -357,7 +378,7 @@ template<
 				}
 			_size++;
 			//
-			//	create a node with 'createNode' left|right|_root possisions.
+			//	create a node with 'createNode' left|right|_root positions.
 			//	also allocate the node, and give it a parent node or _null_node (for first).
 			//	node * tmp - point to the newly created node.
 			//
@@ -406,7 +427,7 @@ template<
 
 		//	ALLOCATOR
 
-		allocator_type		get_allocator() 	{ return (_allocator); }
+		allocator_type		get_allocator() 	{ return (_node_allocator); }
 
 	};
 };

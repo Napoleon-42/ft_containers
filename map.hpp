@@ -6,7 +6,7 @@
 /*   By: lnelson <lnelson@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 13:58:21 by lnelson           #+#    #+#             */
-/*   Updated: 2022/12/06 16:33:39 by lnelson          ###   ########.fr       */
+/*   Updated: 2023/01/10 17:37:04 by lnelson          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <exception>
 #include <iostream>
+#include <sys/types.h>
 #include "pair.hpp"
 #include "map_iterator.hpp"
 #include "red_black_tree.hpp"
@@ -31,10 +32,11 @@ namespace ft
 	//														//
 	//					MAP CLASS DEFINITION				//
 	//														//
-	//	Map is use an <_tree_type> (line 79) class to work	//
+	//	Map use a <_tree_type> (line 79) class to work		//
 	//	Map::iterator and ::reverse_iterator are using 		//
 	//	map_iterator templated with _tree_type::node_type & //
-	//	value_type 											//
+	//	value_type ( pair<const key_type, mapped_type> )	//
+	//														//
 	//////////////////////////////////////////    ////////////
 	/////////////////////////////////////////// //////////////
 	
@@ -84,11 +86,11 @@ namespace ft
 		public:
 
 		
-		typedef	map_iterator<_tree_type::node_type, value_type>			iterator;
-		typedef	map_iterator<const _tree_type::node_type, value_type>	const_iterator;
+		typedef	typename _tree_type::iterator		iterator;
+		typedef	typename _tree_type::const_iterator	const_iterator;
 		
-		typedef	<_tree_type::node_type, value_type>	reverse_iterator;
-		typedef <_tree_type::node_type, value_type>	const_reverse_iterator;
+		//typedef	<_tree_type::node_type, value_type>	reverse_iterator;
+		//typedef <_tree_type::node_type, value_type>	const_reverse_iterator;
 		
 		
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
@@ -97,7 +99,7 @@ namespace ft
 
         protected:
 
-        _treee_type	_internal_tree;
+        _tree_type	_internal_tree;
         
 		//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
 		//______________________PUBLIC_FUNCTIONS___________________//
@@ -107,13 +109,15 @@ namespace ft
         
 		//	ITERATORS
 
-		//iterator					begin() 		{ return (_internal_tree.begin());	}
-		//const_iterator			begin() const	{ return (_internal_tree.begin());	}
+		iterator					begin() 		{ return (_internal_tree.begin());	}
+		const_iterator				begin() const	{ return (_internal_tree.begin());	}
+		
 		//reverse_iterator			rbegin() 		{ return (_internal_tree.rbegin());	}
 		//const_reverse_iterator	rbegin() const	{ return (_internal_tree.rbegin());	}
 		
-		//iterator					end() 			{ return (_internal_tree.end());	}
-		//const_iterator			end() const		{ return (_internal_tree.end());	}
+		iterator					end() 			{ return (_internal_tree.end());	}
+		const_iterator				end() const		{ return (_internal_tree.end());	}
+		
 		//reverse_iterator			rend()			{ return (_internal_tree.rend());	}
 		//const_reverse_iterator	rend() const	{ return (_internal_tree.rend());	}	
 
